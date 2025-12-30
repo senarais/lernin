@@ -18,7 +18,7 @@ export default function Home() {
         }
 
         const data = await res.json();
-        setUsername(data.data.username);
+        setUsername(data.user.username);
       } catch (err) {
         console.log(err);
       }

@@ -41,3 +41,16 @@ export const loginUser = async ({email, password}) => {
         accessToken: data.session.access_token
     }
 }
+
+export const getUser = async (userId) => {
+    const {data, error} = await supabaseSecret
+    .from('users')
+    .select('id, email, username')
+    .eq('id', userId)
+    .single()
+
+    console.log(data);
+
+    if(error) throw error
+    return data;
+}

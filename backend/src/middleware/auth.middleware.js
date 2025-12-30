@@ -7,12 +7,6 @@ export const authMiddleware = async (req, res, next) => {
     const { data, error } = await supabaseAnon.auth.getUser(token)
     if (error) return res.status(401).json({ error: 'Invalid token' })
     
-    const {data: userData, error: userError} = await supabaseSecret
-        .from('users')
-        .select('id, email, username')
-        .eq('id', data.user.id)
-        .single()
-
-    req.user = userData;
+    req.user = data.user;
     next()
 }
