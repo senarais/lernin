@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <main>
-      <h1>Auth Demo</h1>
+      <h1>Lernin Demo</h1>
       {username ? <p>Welcome, {username}!</p> : <p>Please log in.</p>}
       <ul>
         <li>
