@@ -1,6 +1,6 @@
 import express from 'express'
-import * as courseController from '../controllers/course.controller.js'
-import { authMiddleware } from '../middlewares/auth.middleware.js'
+import * as courseController from '../controller/course.controller.js'
+import { authMiddleware } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
 

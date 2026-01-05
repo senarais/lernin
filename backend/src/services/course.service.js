@@ -1,4 +1,4 @@
-import { supabaseSecret } from "../config/supabase"
+import { supabaseSecret } from "../config/supabase.js"
 
 /**
  * ============================

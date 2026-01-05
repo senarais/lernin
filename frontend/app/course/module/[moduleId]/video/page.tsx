@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import videojs, { VideoJsPlayer } from 'video.js'
+import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import { useParams, useRouter } from 'next/navigation'
 
@@ -9,7 +9,7 @@ export default function VideoPage() {
   const { moduleId } = useParams<{ moduleId: string }>()
   const router = useRouter()
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  const playerRef = useRef<VideoJsPlayer | null>(null)
+  const playerRef = useRef<any>(null)
   const [videoUrl, setVideoUrl] = useState<string>('')
 
   useEffect(() => {

@@ -27,7 +27,6 @@ export default function Home() {
     fetchUser();
   }, []);
 
-
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault(); // supaya link tidak reload halaman
 
@@ -64,6 +63,11 @@ export default function Home() {
         </li>
         <li>
           <a href="/me">Me</a>
+        </li>
+
+        {/* ✅ Link ke Course */}
+        <li>
+          <a href="/course">Course</a>
         </li>
       </ul>
     </main>
