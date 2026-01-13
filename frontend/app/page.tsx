@@ -61,9 +61,9 @@ export default function Home() {
             Logout
           </a>
         </li>
-        <li>
+        {/* <li>
           <a href="/me">Me</a>
-        </li>
+        </li> */}
 
         {/* ✅ Link ke Course */}
         <li>

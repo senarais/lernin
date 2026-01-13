@@ -24,3 +24,122 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* === UDEMY STYLE VIDEO.JS THEME === */
+
+/* 1. Base Player & Font */
+.video-js.vjs-udemy-theme {
+  font-family: 'Arial', sans-serif; /* Udemy pakai font sans simple */
+  border-radius: 0; /* Udemy player biasanya kotak tajam atau radius kecil */
+}
+
+/* 2. Control Bar (Bagian Bawah) */
+.video-js .vjs-control-bar {
+  background-color: rgba(28, 29, 31, 0.95) !important; /* Warna hitam Udemy */
+  height: 50px !important;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+/* 3. Button Icons */
+.video-js .vjs-button {
+  color: #fff;
+  transition: color 0.2s;
+}
+.video-js .vjs-button:hover {
+  color: #d1d7dc; /* Sedikit abu saat hover */
+}
+
+/* 4. Progress Bar (Garis Merah/Ungu) */
+/* Posisi progress bar di Udemy ada di paling atas control bar atau floating */
+.video-js .vjs-progress-control {
+  position: absolute;
+  top: -10px; /* Taruh di atas control bar */
+  left: 0;
+  width: 100%;
+  height: 10px !important;
+}
+.video-js .vjs-play-progress {
+  background-color: #a435f0 !important; /* Warna Ungu Udemy */
+}
+.video-js .vjs-play-progress:before {
+  display: none; /* Hilangkan bulatan di ujung garis */
+}
+.video-js .vjs-slider {
+  background-color: rgba(255,255,255,0.3) !important;
+}
+
+/* 5. Big Play Button (Tengah) */
+.video-js .vjs-big-play-button {
+  background: white !important;
+  color: black !important;
+  border: none !important;
+  width: 70px !important;
+  height: 70px !important;
+  border-radius: 50% !important;
+  line-height: 70px !important;
+  font-size: 3em !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  margin: 0 !important;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+/* 6. PLAYBACK RATE (SPEED) MENU - Kunci mirip Udemy */
+.video-js .vjs-playback-rate {
+  order: 5; /* Pastikan urutan di kanan */
+}
+
+.video-js .vjs-playback-rate .vjs-playback-rate-value {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 50px;
+}
+
+/* Menu Popup Speed */
+.video-js .vjs-menu-button-popup .vjs-menu {
+  width: 100px;
+  left: -20px; /* Geser dikit biar pas */
+  bottom: 50px; /* Muncul di atas tombol */
+  border-radius: 4px;
+}
+
+.video-js .vjs-menu-content {
+  background-color: rgba(28, 29, 31, 0.95) !important; /* Background Menu Hitam */
+  border-radius: 4px;
+  padding: 5px 0;
+}
+
+.video-js .vjs-menu-item {
+  text-align: center;
+  font-size: 13px;
+  padding: 5px;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.video-js .vjs-menu-item:hover,
+.video-js .vjs-menu-item.vjs-selected {
+  background-color: #3e4143 !important;
+  color: #fff !important;
+}
+.video-js .vjs-menu-item.vjs-selected {
+  font-weight: bold;
+  color: #a435f0 !important; /* Highlight ungu Udemy */
+}
+
+/* 7. Spacer Trick - Mendorong tombol kanan ke ujung */
+/* Kita pakai flexbox spacer trick */
+.video-js .vjs-custom-control-spacer {
+  display: flex;
+  flex: 1 1 auto;
+}
+/* Karena videojs default agak tricky, kita paksa margin di progress control/time */
+.video-js .vjs-time-control {
+  min-width: auto;
+  padding: 0 5px;
+  font-size: 12px;
+  line-height: 50px;
+}

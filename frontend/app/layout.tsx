@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"></link>
+        {/* <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"></link> */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
