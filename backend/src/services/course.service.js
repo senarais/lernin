@@ -105,20 +105,23 @@ export const getModuleDetail = async (userId, moduleId) => {
 /**
  * Save module progress (Save & Continue)
  */
-export const completeModule = async (userId, moduleId) => {
+/**
+ * Save video progress (Video Completed)
+ */
+export const completeVideo = async (userId, moduleId) => {
   const { error } = await supabaseSecret
     .from('user_module_progress')
     .upsert({
       user_id: userId,
       module_id: moduleId,
-      is_completed: true,
-      completed_at: new Date()
+      video_completed: true
     })
 
   if (error) throw error
 
   return { success: true }
 }
+
 
 /**
  * ============================
@@ -151,7 +154,37 @@ export const getQuizByModule = async (moduleId) => {
 /**
  * Submit quiz answers
  */
+/**
+ * Submit quiz answers
+ */
 export const submitQuiz = async (userId, quizId, answers) => {
+  // Get module_id from quiz
+  const { data: quiz, error: quizError } = await supabaseSecret
+    .from('quizzes')
+    .select('module_id')
+    .eq('id', quizId)
+    .single()
+
+  if (quizError) throw quizError
+
+  // Update quiz_completed (ONLY update, NO insert)
+  const { data: progressData, error: progressError } = await supabaseSecret
+    .from('user_module_progress')
+    .update({
+      quiz_completed: true
+    })
+    .eq('user_id', userId)
+    .eq('module_id', quiz.module_id)
+    .select()
+
+  // ❌ user belum nonton video / progress belum ada
+  if (progressError || !progressData || progressData.length === 0) {
+    return {
+      success: false,
+      message: 'Tonton materi terlebih dahulu.'
+    }
+  }
+
   // Get correct answers
   const { data: questions, error } = await supabaseSecret
     .from('quiz_questions')
@@ -173,6 +206,7 @@ export const submitQuiz = async (userId, quizId, answers) => {
 
   const score = correct * 20
 
+  // Save quiz attempt
   const { error: insertError } = await supabaseSecret
     .from('user_quiz_attempts')
     .insert({
@@ -187,12 +221,16 @@ export const submitQuiz = async (userId, quizId, answers) => {
   if (insertError) throw insertError
 
   return {
+    success: true,
     score,
     correct,
     wrong,
     total: questions.length
   }
 }
+
+
+
 
 /**
  * Get quiz attempt history

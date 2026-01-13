@@ -36,7 +36,7 @@ router.get('/modules/:moduleId', courseController.getModuleDetail)
 // POST /api/courses/modules/:moduleId/complete
 router.post(
   '/modules/:moduleId/complete',
-  courseController.completeModule
+  courseController.completeVideo
 )
 
 // GET /api/courses/modules/:moduleId/quiz

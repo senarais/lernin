@@ -15,11 +15,19 @@ type Quiz = {
   quiz_questions: Question[]
 }
 
+type QuizResult = {
+  success?: boolean
+  message?: string
+  score?: number
+  correct?: number
+  wrong?: number
+}
+
 export default function QuizPage() {
   const { moduleId } = useParams<{ moduleId: string }>()
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<QuizResult | null>(null)
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -84,11 +92,17 @@ export default function QuizPage() {
       <button onClick={submitQuiz}>Submit Quiz</button>
 
       {result && (
-        <div>
-          <h3>Hasil</h3>
-          <p>Score: {result.score}</p>
-          <p>Benar: {result.correct}</p>
-          <p>Salah: {result.wrong}</p>
+        <div style={{ marginTop: 16 }}>
+          {result.success === false ? (
+            <p style={{ color: 'red' }}>{result.message}</p>
+          ) : (
+            <>
+              <h3>Hasil</h3>
+              <p>Score: {result.score}</p>
+              <p>Benar: {result.correct}</p>
+              <p>Salah: {result.wrong}</p>
+            </>
+          )}
         </div>
       )}
     </div>

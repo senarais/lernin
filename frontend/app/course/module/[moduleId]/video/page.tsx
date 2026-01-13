@@ -3,21 +3,26 @@
 import { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
+import 'videojs-youtube'
 import { useParams, useRouter } from 'next/navigation'
 
 export default function VideoPage() {
   const { moduleId } = useParams<{ moduleId: string }>()
   const router = useRouter()
+
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const playerRef = useRef<any>(null)
+
   const [videoUrl, setVideoUrl] = useState<string>('')
 
+  // Fetch video URL dari backend
   useEffect(() => {
     const fetchVideo = async () => {
       const res = await fetch(
         `http://localhost:5000/api/courses/modules/${moduleId}`,
         { credentials: 'include' }
       )
+
       const json = await res.json()
       setVideoUrl(json.data.video_url)
     }
@@ -25,19 +30,26 @@ export default function VideoPage() {
     fetchVideo()
   }, [moduleId])
 
+  // Init video.js + YouTube
   useEffect(() => {
-    if (videoUrl && videoRef.current && !playerRef.current) {
-      playerRef.current = videojs(videoRef.current, {
-        controls: true,
-        responsive: true,
-        sources: [
-          {
-            src: videoUrl,
-            type: 'video/mp4'
-          }
-        ]
-      })
-    }
+    if (!videoUrl || !videoRef.current || playerRef.current) return
+
+    playerRef.current = videojs(videoRef.current, {
+      controls: true,
+      responsive: true,
+      fluid: true,
+      techOrder: ['youtube'],
+      sources: [
+        {
+          src: videoUrl, // link youtube
+          type: 'video/youtube'
+        }
+      ],
+      youtube: {
+        iv_load_policy: 3, // hide annotations
+        modestbranding: 1
+      }
+    })
 
     return () => {
       if (playerRef.current) {
@@ -60,13 +72,15 @@ export default function VideoPage() {
   }
 
   return (
-    <div>
+    <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <h1>Video Materi</h1>
 
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered"
-      />
+      <div data-vjs-player>
+        <video
+          ref={videoRef}
+          className="video-js vjs-big-play-centered"
+        />
+      </div>
 
       <br />
 

@@ -69,12 +69,12 @@ export const getModuleDetail = async (req, res, next) => {
 }
 
 // POST /api/courses/modules/:moduleId/complete
-export const completeModule = async (req, res, next) => {
+export const completeVideo = async (req, res, next) => {
   try {
     const userId = req.user.id
     const { moduleId } = req.params
 
-    await courseService.completeModule(userId, moduleId)
+    await courseService.completeVideo(userId, moduleId)
 
     return res.status(200).json({
       success: true,
