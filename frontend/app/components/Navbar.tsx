@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -10,7 +10,8 @@ type NavigationItem = {
 }
 
 const Navbar = () => {
-    const [open, setOpen] = useState<boolean>(false)
+    const [open, setOpen] = useState(false)
+    const [scrolled, setScrolled] = useState(false)
 
     const navigation: NavigationItem[] = [
         { title: "E-Learning", path: "/course" },
@@ -19,23 +20,37 @@ const Navbar = () => {
         { title: "Tracker", path: "/pricing" }
     ]
 
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50)
+        }
+
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
+
     return (
-        <nav className="fixed font-semibold w-full md:text-sm pt-4">
+        <nav
+            className={`fixed top-0 w-full z-50 font-semibold transition-all duration-300
+            ${scrolled ? "bg-white shadow-md" : "bg-transparent"}`}
+        >
             <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
+                {/* Logo + mobile button */}
                 <div className="flex items-center justify-between py-3 md:py-5">
                     <Link href="/" className="flex items-center">
                         <Image
                             src="/lernin.png"
                             width={120}
                             height={50}
-                            alt="Float UI logo"
+                            alt="Lernin logo"
+                            priority
                         />
                     </Link>
 
                     {/* Mobile menu button */}
                     <div className="md:hidden">
                         <button
-                            className="text-gray-500 hover:text-gray-800"
+                            className="text-gray-700 hover:text-indigo-600"
                             onClick={() => setOpen(!open)}
                             aria-label="Toggle menu"
                         >
@@ -74,9 +89,8 @@ const Navbar = () => {
 
                 {/* Navigation */}
                 <div
-                    className={`flex-1 pb-3 mt-8 md:block md:pb-0 md:mt-0 ${
-                        open ? "block" : "hidden"
-                    }`}
+                    className={`flex-1 pb-3 mt-8 md:block md:pb-0 md:mt-0
+                    ${open ? "block" : "hidden"}`}
                 >
                     <ul className="justify-end font-sans items-center space-y-6 md:flex md:space-x-6 md:space-y-0">
                         {navigation.map((item) => (
@@ -90,7 +104,7 @@ const Navbar = () => {
                             </li>
                         ))}
 
-                        <span className="hidden w-px h-6 bg-black md:block" />
+                        <span className="hidden w-px h-6 bg-gray-300 md:block" />
 
                         <div className="space-y-3 items-center gap-x-6 md:flex md:space-y-0">
                             <li>
