@@ -142,3 +142,17 @@ body {
   font-size: 12px;
   line-height: 50px;
 }
+
+/* 🔥 force override slick arrow color */
+.slick-prev:before,
+.slick-next:before {
+  color: #004AAD !important;
+  font-size: 28px !important;
+  opacity: 1 !important;
+}
+
+/* hover state */
+.slick-prev:hover:before,
+.slick-next:hover:before {
+  color: #003a8c !important;
+}

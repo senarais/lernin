@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import Navbar from "../components/Navbar"
 import ImageSlider from "../components/HeroSlider"
+import Testimonials from "../components/Testimontials"
 
 type NavigationItem = {
     title: string
@@ -21,7 +22,7 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="w-full h-[500px] mt-20 font-sans flex flex-col items-center">
+            <div className="w-full h-fit py-10 mt-10 font-sans flex flex-col items-center">
                 <div className="">
                     <h2 className="text-4xl text-center font-medium">Mengapa memilih <span className="text-primary font-bold">Lernin?</span></h2>
                     <div className="w-[90%] mt-12 grid lg:grid-cols-2 grid-rows-2 gap-15 gap-x-40 justify-center items-center">
@@ -45,6 +46,11 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <div className="bg-gray-50">
+                <Testimonials />
+            </div>
+
+
         </div>
     )
 }

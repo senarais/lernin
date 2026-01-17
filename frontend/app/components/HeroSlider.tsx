@@ -10,7 +10,7 @@ const ImageSlider: React.FC = () => {
         gap: '1rem',
         arrows: false,
         autoplay: true,
-        interval: 3000
+        interval: 500
       }}
       aria-label="My Favorite Images"
     >
