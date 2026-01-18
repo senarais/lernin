@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.1",
     "@splidejs/react-splide": "^0.7.12",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",

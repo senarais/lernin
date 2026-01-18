@@ -6,6 +6,8 @@ import Image from "next/image"
 import Navbar from "../components/Navbar"
 import ImageSlider from "../components/HeroSlider"
 import Testimonials from "../components/Testimontials"
+import FaqSection from "../components/Faq"
+import Footer from "../components/Footer"
 
 type NavigationItem = {
     title: string
@@ -99,9 +101,15 @@ const Home = () => {
                 </div>
             </div>
             </div>
-            <div className="bg-gray-100 rounded-t-4xl pt-10 lg:pt-30">
+            <div className="bg-gray-50 rounded-t-4xl pt-10 lg:pt-30">
                 <Testimonials />
             </div>
+
+            <div className="rounded-t-4xl pb-20">
+                <FaqSection />
+            </div>
+
+            <Footer />
 
 
         </div>
