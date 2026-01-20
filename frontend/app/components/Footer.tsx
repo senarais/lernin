@@ -69,7 +69,7 @@ const ourpageLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#004AAD] text-white pt-14 mt-20 font-sans">
+    <footer className="bg-[#004AAD] text-white pt-14 mt-20 pb-10 font-sans">
       <div className="container max-w-screen mx-auto px-6">
         {/* Footer Content */}
         <div className="flex flex-col lg:flex-row justify-evenly gap-14">

@@ -13,6 +13,7 @@
   --color-primary: #004AAD;
   --color-secondary: #F4D505;
   --color-third: #5DE0E6;
+  --color-bg: #142941;
   --font-sans: var(--font-poppins);
   --font-display: var(--font-chewy);
 }
@@ -155,4 +156,27 @@ body {
 .slick-prev:hover:before,
 .slick-next:hover:before {
   color: #003a8c !important;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 10px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f0f !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3f3f3f !important;
+  border-radius: 10px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5f5f5f !important;
+}
+
+/* Firefox */
+* {
+  scrollbar-color: #3f3f3f #0f0f0f !important;
 }

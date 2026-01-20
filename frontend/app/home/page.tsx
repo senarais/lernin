@@ -16,15 +16,20 @@ type NavigationItem = {
 
 const Home = () => {
     return (
-        <div className="w-full h-dvh bg-white">
+        <div className="w-full h-dvh flex flex-col items-center bg-bg text-white overflow-x-hidden">
             <Navbar/>
-            <div className="w-full flex justify-center h-fit bg-linear-to-b from-third to-transparent rounded-b-4xl" >
-                <div className="w-[90%] rounded-4xl mt-36">
-                    <ImageSlider />
+            <div className="relative w-[90%] h-fit flex justify-center items-center py-30">
+                <div className="max-w-[580px] z-10 flex flex-col gap-10">
+                    <h1 className="font-semibold text-4xl">Bimbingan Belajar UTBK untuk bantu kamu lolos <span className="text-third">PTN </span><span className="text-secondary">IMPIAN</span></h1>
+                    <p className="text-2xl font-extralight">Tingkatkan Kemampuan di Lingkungan Profesional dan Raih Kesuksesan!</p>
+                    <a className="w-42 rounded-3xl flex items-center justify-center h-12 border border-secondary text-sm" href="/course">Coba Sekarang <img className="ml-2" src="/vector.svg" alt="" /></a>
                 </div>
+                <img className="z-10" src="/hero.png" alt="hero image" />
+                <div className="absolute w-120 h-120 bg-third/40 blur-3xl -right-80 bottom-0 rounded-full z-1"></div>
+                <div className="absolute w-120 h-120 bg-third/40 blur-3xl -left-80  rounded-full z-1"></div>
             </div>
 
-            <div className="w-full h-fit py-10 mt-10 font-sans flex flex-col items-center">
+            <div className="w-full h-fit py-10 font-sans flex flex-col items-center">
                 <div className="">
                     <h2 className="text-4xl text-center font-medium">Mengapa memilih <span className="text-primary font-bold">Lernin?</span></h2>
                     <div className="w-[90%] mt-12 grid lg:grid-cols-2 grid-rows-2 gap-15 gap-x-40 justify-center items-center">
@@ -105,7 +110,7 @@ const Home = () => {
                 <Testimonials />
             </div>
 
-            <div className="rounded-t-4xl pb-20">
+            <div className="rounded-t-4xl ">
                 <FaqSection />
             </div>
 

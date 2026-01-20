@@ -31,8 +31,8 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`fixed top-0 w-full z-50 font-semibold transition-all duration-300
-            ${scrolled ? "bg-white shadow-md" : "bg-transparent"}`}
+            className={`fixed top-0 w-full z-50 transition-all duration-300
+            ${scrolled ? "bg-black/80 shadow-md text-white" : "bg-transparent text-white"}`}
         >
             <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
                 {/* Logo + mobile button */}
@@ -50,7 +50,6 @@ const Navbar = () => {
                     {/* Mobile menu button */}
                     <div className="md:hidden">
                         <button
-                            className="text-gray-700 hover:text-indigo-600"
                             onClick={() => setOpen(!open)}
                             aria-label="Toggle menu"
                         >
@@ -92,13 +91,10 @@ const Navbar = () => {
                     className={`flex-1 pb-3 mt-8 md:block md:pb-0 md:mt-0
                     ${open ? "block" : "hidden"}`}
                 >
-                    <ul className="justify-end font-sans items-center space-y-6 md:flex md:space-x-6 md:space-y-0">
+                    <ul className="justify-end items-center space-y-6 md:flex md:space-x-6 md:space-y-0">
                         {navigation.map((item) => (
-                            <li
-                                key={item.title}
-                                className="text-gray-700 hover:text-indigo-600"
-                            >
-                                <Link href={item.path} className="block">
+                            <li key={item.title}>
+                                <Link href={item.path} className="block hover:text-third">
                                     {item.title}
                                 </Link>
                             </li>
