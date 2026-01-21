@@ -42,7 +42,16 @@ const Home = () => {
             </div>
 
 
-
+            {/* IPS Section */}
+            <div className="relative w-[90%] h-fit flex justify-center items-center gap-20 py-30">
+                <div className="max-w-[480px] z-10 flex flex-col gap-10">
+                    <h2 className="font-semibold text-4xl">Matapelajaran Dalam Jurusan IPS</h2>
+                    <p className="text-[18px] font-extralight">WooCommerce is one of the fastest-growing eCommerce communities. We’re proud that the helpfulness of the community and a wealth of online resources are frequently cited as reasons our users love it. There are 80+ meetups worldwide!</p>
+                    <a className="w-65 rounded-4xl flex items-center justify-center h-16 bg-primary text-white text-[18px]" href="/course">Materi Selengkapnya</a>
+                </div>
+                <img className="w-auto h-auto max-w-125 z-10" src="/landing/ips.svg" alt="Ipa" />
+                <div className="absolute w-120 h-120 bg-third/40 blur-3xl -left-60 rounded-full z-1"></div>
+            </div>
 
             <div className="w-full h-fit py-10 font-sans flex flex-col items-center">
                 <div className="">
