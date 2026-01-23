@@ -24,12 +24,12 @@ const FaqsCard = ({ faqsList, idx }: { faqsList: FaqItem; idx: number }) => {
       key={idx}
       onClick={handleOpenAnswer}
     >
-      <h4 className="cursor-pointer pb-5 flex items-center justify-between text-lg text-foreground font-medium">
+      <h4 className="cursor-pointer pb-5 flex items-center justify-between text-xl font-medium">
         {faqsList.q}
         {open ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-primary ml-2"
+            className="h-5 w-5 text-white ml-2"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -39,7 +39,7 @@ const FaqsCard = ({ faqsList, idx }: { faqsList: FaqItem; idx: number }) => {
         ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-primary ml-2"
+            className="h-5 w-5 text-white ml-2"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -92,17 +92,16 @@ export default function FaqSection() {
   ];
 
   return (
-    <section className="leading-relaxed max-w-7xl mt-20 mx-auto px-4 md:px-8 font-sans">
+    <section className="leading-relaxed w-full max-w-7xl mt-30 px-4 md:px-8 font-sans">
       <div className="space-y-3 text-center">
-        <h1 className="text-3xl font-semibold text-foreground font-sans">
-          Pertanyaan yang Sering Ditanyakan
+        <h1 className="text-3xl font-semibold text-secondary font-sans">
+          Frequently Asked Questions
         </h1>
-        <p className="text-muted-foreground max-w-lg mx-auto text-lg font-sans">
-          Jawaban atas pertanyaan umum seputar penggunaan Lernin dan sistem
-          pembelajaran di dalamnya.
+        <p className="text-[70px] max-w-2xl mx-auto font-bold font-sans">
+          Any Questions?
         </p>
       </div>
-      <div className="mt-14 max-w-2xl mx-auto bg-card p-6 rounded-2xl border shadow-2xl">
+      <div className="mt-14 max-w-5xl p-6 w-full">
         {faqsList.map((item, idx) => (
           <FaqsCard key={idx} idx={idx} faqsList={item} />
         ))}
