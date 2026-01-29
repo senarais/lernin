@@ -1,31 +1,15 @@
 import { supabaseAnon, supabaseSecret } from "../config/supabase.js";
 
+// --- EXISTING EMAIL/PASSWORD FUNCTIONS ---
 export const registerUser = async ({email, password, username}) => {
-    const { data, error } = await supabaseAnon.auth.signUp({
-        email,
-        password
-    })
+    const { data, error } = await supabaseAnon.auth.signUp({ email, password })
     if (error) throw error
-
-    const {error: dbError} = await supabaseSecret
-        .from('users')
-        .insert({
-            id: data.user.id,
-            email,
-            username
-        })
-    
-    if (dbError) throw dbError
-
+    // Trigger SQL sudah handle insert ke public.users, jadi kita skip manual insert
     return {id: data.user.id, email, username}
 }
 
 export const loginUser = async ({email, password}) => {
-    const {data, error} = await supabaseAnon.auth.signInWithPassword({
-        email,
-        password
-    })
-
+    const {data, error} = await supabaseAnon.auth.signInWithPassword({ email, password })
     if (error) throw error
 
     const {data: user, error: userError} = await supabaseSecret
@@ -36,21 +20,51 @@ export const loginUser = async ({email, password}) => {
     
     if (userError) throw userError
 
-    return {
-        ...user,
-        accessToken: data.session.access_token
-    }
+    return { ...user, accessToken: data.session.access_token }
 }
 
 export const getUser = async (userId) => {
     const {data, error} = await supabaseSecret
-    .from('users')
-    .select('id, email, username')
-    .eq('id', userId)
-    .single()
-
-    console.log(data);
-
+        .from('users')
+        .select('id, email, username')
+        .eq('id', userId)
+        .single()
     if(error) throw error
     return data;
+}
+
+// --- NEW: GOOGLE AUTH FUNCTIONS ---
+
+export const getGoogleUrl = async () => {
+    const { data, error } = await supabaseAnon.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            // PENTING: Arahkan ke FRONTEND (Next.js), bukan Backend
+            redirectTo: 'http://localhost:3000/auth/callback', 
+            queryParams: {
+                access_type: 'offline',
+                prompt: 'consent',
+            },
+        },
+    });
+
+    if (error) throw error;
+    return data.url;
+}
+
+export const verifyGoogleToken = async (accessToken) => {
+    // 1. Cek validitas token ke Supabase Auth
+    const { data: { user }, error } = await supabaseAnon.auth.getUser(accessToken);
+    if (error) throw error;
+
+    // 2. Ambil data user dari tabel public.users kita
+    const { data: dbUser, error: dbError } = await supabaseSecret
+        .from('users')
+        .select('id, email, username')
+        .eq('id', user.id)
+        .single();
+    
+    if (dbError) throw dbError;
+
+    return dbUser;
 }

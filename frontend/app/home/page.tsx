@@ -19,7 +19,7 @@ const Home = () => {
         <div className="w-full h-dvh flex flex-col items-center bg-bg text-white overflow-x-hidden">
             <Navbar/>
             {/* Hero Section */}
-            <section className="relative w-[90%] h-fit flex justify-center items-center py-30">
+            <section className="relative w-[90%] h-fit flex justify-center items-center py-10">
                 <div className="max-w-[500px] z-10 flex flex-col gap-10">
                     <h1 className="font-semibold text-4xl">Bimbingan Belajar UTBK untuk bantu kamu lolos <br /> <span className="text-third">PTN </span><span className="text-secondary">IMPIAN</span></h1>
                     <p className="text-2xl font-extralight">Tingkatkan Kemampuan di Lingkungan Profesional dan Raih Kesuksesan!</p>
