@@ -2,16 +2,42 @@ import * as courseService from '../services/course.service.js'
 
 /**
  * ============================
+ * COURSE (MENU UTAMA)
+ * ============================
+ */
+
+// GET /api/courses
+export const getCourses = async (req, res, next) => {
+  try {
+    const courses = await courseService.getCourses()
+    return res.status(200).json({
+      success: true,
+      data: courses
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+/**
+ * ============================
  * SUBJECT
  * ============================
  */
 
-// GET /api/courses/subjects
+// GET /api/courses/:courseSlug/subjects?grade=10
 export const getSubjects = async (req, res, next) => {
   try {
     const userId = req.user.id
+    // Ambil slug dari URL params (misal: 'utbk', 'sma-ipa')
+    const { courseSlug } = req.params
+    // Ambil grade dari query params (optional)
+    const { grade } = req.query 
+    
+    // Pastikan logic kalau grade dikirim, dia valid
+    const gradeLevel = grade ? parseInt(grade) : null
 
-    const subjects = await courseService.getSubjectsWithProgress(userId)
+    const subjects = await courseService.getSubjectsByCourse(userId, courseSlug, gradeLevel)
 
     return res.status(200).json({
       success: true,
@@ -28,16 +54,12 @@ export const getSubjects = async (req, res, next) => {
  * ============================
  */
 
-// GET /api/courses/subjects/:subjectId/modules
 export const getModulesBySubject = async (req, res, next) => {
   try {
     const userId = req.user.id
     const { subjectId } = req.params
 
-    const modules = await courseService.getModulesBySubject(
-      userId,
-      subjectId
-    )
+    const modules = await courseService.getModulesBySubject(userId, subjectId)
 
     return res.status(200).json({
       success: true,
@@ -48,16 +70,12 @@ export const getModulesBySubject = async (req, res, next) => {
   }
 }
 
-// GET /api/courses/modules/:moduleId
 export const getModuleDetail = async (req, res, next) => {
   try {
     const userId = req.user.id
     const { moduleId } = req.params
 
-    const module = await courseService.getModuleDetail(
-      userId,
-      moduleId
-    )
+    const module = await courseService.getModuleDetail(userId, moduleId)
 
     return res.status(200).json({
       success: true,
@@ -68,7 +86,6 @@ export const getModuleDetail = async (req, res, next) => {
   }
 }
 
-// POST /api/courses/modules/:moduleId/complete
 export const completeVideo = async (req, res, next) => {
   try {
     const userId = req.user.id
@@ -91,13 +108,10 @@ export const completeVideo = async (req, res, next) => {
  * ============================
  */
 
-// GET /api/courses/modules/:moduleId/quiz
 export const getQuizByModule = async (req, res, next) => {
   try {
     const { moduleId } = req.params
-
     const quiz = await courseService.getQuizByModule(moduleId)
-
     return res.status(200).json({
       success: true,
       data: quiz
@@ -107,7 +121,6 @@ export const getQuizByModule = async (req, res, next) => {
   }
 }
 
-// POST /api/courses/quizzes/:quizId/submit
 export const submitQuiz = async (req, res, next) => {
   try {
     const userId = req.user.id
@@ -121,12 +134,7 @@ export const submitQuiz = async (req, res, next) => {
       })
     }
 
-    const result = await courseService.submitQuiz(
-      userId,
-      quizId,
-      answers
-    )
-
+    const result = await courseService.submitQuiz(userId, quizId, answers)
     return res.status(200).json({
       success: true,
       data: result
@@ -136,17 +144,11 @@ export const submitQuiz = async (req, res, next) => {
   }
 }
 
-// GET /api/courses/quizzes/:quizId/attempts
 export const getQuizAttempts = async (req, res, next) => {
   try {
     const userId = req.user.id
     const { quizId } = req.params
-
-    const attempts = await courseService.getQuizAttempts(
-      userId,
-      quizId
-    )
-
+    const attempts = await courseService.getQuizAttempts(userId, quizId)
     return res.status(200).json({
       success: true,
       data: attempts

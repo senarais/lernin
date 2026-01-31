@@ -2,21 +2,49 @@ import { supabaseSecret } from "../config/supabase.js"
 
 /**
  * ============================
+ * COURSE (MENU UTAMA)
+ * ============================
+ */
+
+/**
+ * Get all available courses (UTBK, SMA IPA, SMA IPS)
+ */
+export const getCourses = async () => {
+  const { data, error } = await supabaseSecret
+    .from('courses')
+    .select('id, slug, title')
+    .order('title')
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * ============================
  * SUBJECT
  * ============================
  */
 
 /**
- * Get all subjects with progress user
+ * Get subjects filtered by Course Slug & Grade Level with progress
+ * Params: 
+ * - userId: uuid
+ * - courseSlug: string ('utbk', 'sma-ipa', etc)
+ * - gradeLevel: number (optional, e.g. 10, 11, 12)
  */
-export const getSubjectsWithProgress = async (userId) => {
-  const { data, error } = await supabaseSecret
+export const getSubjectsByCourse = async (userId, courseSlug, gradeLevel = null) => {
+  // 1. Base Query: Join ke tabel courses pake !inner biar bisa filter by slug
+  let query = supabaseSecret
     .from('subjects')
     .select(`
       id,
       title,
       description,
       order_index,
+      grade_level,
+      courses!inner (
+        slug
+      ),
       modules (
         id,
         user_module_progress (
@@ -24,10 +52,19 @@ export const getSubjectsWithProgress = async (userId) => {
         )
       )
     `)
+    .eq('courses.slug', courseSlug)
     .order('order_index')
+
+  // 2. Filter Grade Level kalo ada (Khusus IPA/IPS)
+  if (gradeLevel) {
+    query = query.eq('grade_level', gradeLevel)
+  }
+
+  const { data, error } = await query
 
   if (error) throw error
 
+  // 3. Mapping data biar rapi (ngitung progress)
   return data.map(subject => {
     const totalModules = subject.modules.length
     const completedModules = subject.modules.filter(
@@ -38,21 +75,20 @@ export const getSubjectsWithProgress = async (userId) => {
       id: subject.id,
       title: subject.title,
       description: subject.description,
+      grade_level: subject.grade_level,
       total_modules: totalModules,
-      completed_modules: completedModules
+      completed_modules: completedModules,
+      progress_percentage: totalModules === 0 ? 0 : Math.round((completedModules / totalModules) * 100)
     }
   })
 }
 
 /**
  * ============================
- * MODULE
+ * MODULE (Gak banyak berubah logicnya)
  * ============================
  */
 
-/**
- * Get modules by subject with user progress
- */
 export const getModulesBySubject = async (userId, subjectId) => {
   const { data, error } = await supabaseSecret
     .from('modules')
@@ -80,9 +116,6 @@ export const getModulesBySubject = async (userId, subjectId) => {
   }))
 }
 
-/**
- * Get single module detail + quiz
- */
 export const getModuleDetail = async (userId, moduleId) => {
   const { data, error } = await supabaseSecret
     .from('modules')
@@ -102,12 +135,6 @@ export const getModuleDetail = async (userId, moduleId) => {
   return data
 }
 
-/**
- * Save module progress (Save & Continue)
- */
-/**
- * Save video progress (Video Completed)
- */
 export const completeVideo = async (userId, moduleId) => {
   const { error } = await supabaseSecret
     .from('user_module_progress')
@@ -118,20 +145,15 @@ export const completeVideo = async (userId, moduleId) => {
     })
 
   if (error) throw error
-
   return { success: true }
 }
 
-
 /**
  * ============================
- * QUIZ
+ * QUIZ (Logic tetep sama karena based on ID)
  * ============================
  */
 
-/**
- * Get quiz by module (without correct answer)
- */
 export const getQuizByModule = async (moduleId) => {
   const { data, error } = await supabaseSecret
     .from('quizzes')
@@ -151,14 +173,8 @@ export const getQuizByModule = async (moduleId) => {
   return data
 }
 
-/**
- * Submit quiz answers
- */
-/**
- * Submit quiz answers
- */
 export const submitQuiz = async (userId, quizId, answers) => {
-  // Get module_id from quiz
+  // 1. Cek Module ID
   const { data: quiz, error: quizError } = await supabaseSecret
     .from('quizzes')
     .select('module_id')
@@ -167,25 +183,19 @@ export const submitQuiz = async (userId, quizId, answers) => {
 
   if (quizError) throw quizError
 
-  // Update quiz_completed (ONLY update, NO insert)
+  // 2. Update Progress (Hanya update, harusnya udah insert pas nonton video)
   const { data: progressData, error: progressError } = await supabaseSecret
     .from('user_module_progress')
-    .update({
-      quiz_completed: true
-    })
+    .update({ quiz_completed: true })
     .eq('user_id', userId)
     .eq('module_id', quiz.module_id)
     .select()
 
-  // ❌ user belum nonton video / progress belum ada
   if (progressError || !progressData || progressData.length === 0) {
-    return {
-      success: false,
-      message: 'Tonton materi terlebih dahulu.'
-    }
+    return { success: false, message: 'Tonton materi terlebih dahulu.' }
   }
 
-  // Get correct answers
+  // 3. Hitung Score
   const { data: questions, error } = await supabaseSecret
     .from('quiz_questions')
     .select('id, correct_answer')
@@ -204,9 +214,11 @@ export const submitQuiz = async (userId, quizId, answers) => {
     }
   })
 
-  const score = correct * 20
+  // Asumsi skor max 100, dibagi rata jumlah soal
+  const scorePerQuestion = questions.length > 0 ? 100 / questions.length : 0
+  const score = Math.round(correct * scorePerQuestion)
 
-  // Save quiz attempt
+  // 4. Save Attempt
   const { error: insertError } = await supabaseSecret
     .from('user_quiz_attempts')
     .insert({
@@ -220,31 +232,13 @@ export const submitQuiz = async (userId, quizId, answers) => {
 
   if (insertError) throw insertError
 
-  return {
-    success: true,
-    score,
-    correct,
-    wrong,
-    total: questions.length
-  }
+  return { success: true, score, correct, wrong, total: questions.length }
 }
 
-
-
-
-/**
- * Get quiz attempt history
- */
 export const getQuizAttempts = async (userId, quizId) => {
   const { data, error } = await supabaseSecret
     .from('user_quiz_attempts')
-    .select(`
-      id,
-      score,
-      correct_count,
-      wrong_count,
-      created_at
-    `)
+    .select('id, score, correct_count, wrong_count, created_at')
     .eq('user_id', userId)
     .eq('quiz_id', quizId)
     .order('created_at', { ascending: false })
