@@ -180,10 +180,10 @@ export default function SubjectDetailPage() {
               >
                 <button
                   className={`
-                    px-6 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap
+                    px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap
                     ${isActive 
-                      ? 'bg-[#2D9CDB] text-white shadow-[0_4px_14px_rgba(45,156,219,0.4)]' 
-                      : 'bg-[#1E293B] text-gray-400 hover:bg-[#253248] hover:text-white'}
+                      ? 'bg-third text-black shadow-[0_4px_14px_rgba(45,156,219,0.4)]' 
+                      : 'bg-[#1E3A5F] text-white hover:bg-[#253248] hover:text-white'}
                   `}
                 >
                   {subject.title}
@@ -194,7 +194,7 @@ export default function SubjectDetailPage() {
         </div>
 
         {/* === 3. VIDEO PLAYER === */}
-        <div className="mb-12 rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black">
+        <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl">
              <CourseVideoPlayer activeModuleId={activeModuleId} />
         </div>
 
