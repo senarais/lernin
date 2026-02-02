@@ -246,3 +246,60 @@ export const getQuizAttempts = async (userId, quizId) => {
   if (error) throw error
   return data
 }
+
+/**
+ * Get subject detail + modules + course info
+ * (Updated to support Breadcrumbs & Navigation)
+ */
+export const getSubjectDetailWithModules = async (userId, subjectId) => {
+  // 1. Ambil Modules seperti biasa
+  const { data: modules, error: moduleError } = await supabaseSecret
+    .from('modules')
+    .select(`
+      id,
+      title,
+      video_url,
+      order_index,
+      user_module_progress ( is_completed )
+    `)
+    .eq('subject_id', subjectId)
+    .eq('user_module_progress.user_id', userId)
+    .order('order_index')
+
+  if (moduleError) throw moduleError
+
+  // 2. Ambil Info Subject + Course Parent-nya
+  const { data: subject, error: subjectError } = await supabaseSecret
+    .from('subjects')
+    .select(`
+      id,
+      title,
+      grade_level,
+      courses (
+        slug,
+        title
+      )
+    `)
+    .eq('id', subjectId)
+    .single()
+
+  if (subjectError) throw subjectError
+
+  // 3. Gabungin datanya
+  return {
+    subject: {
+      id: subject.id,
+      title: subject.title,
+      grade_level: subject.grade_level,
+      course_slug: subject.courses.slug, // Penting buat navigasi
+      course_title: subject.courses.title // Penting buat breadcrumb
+    },
+    modules: modules.map(m => ({
+      id: m.id,
+      title: m.title,
+      video_url: m.video_url,
+      order_index: m.order_index,
+      is_completed: m.user_module_progress?.[0]?.is_completed ?? false
+    }))
+  }
+}

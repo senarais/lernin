@@ -54,16 +54,18 @@ export const getSubjects = async (req, res, next) => {
  * ============================
  */
 
+// GET /api/courses/subjects/:subjectId/modules
 export const getModulesBySubject = async (req, res, next) => {
   try {
     const userId = req.user.id
     const { subjectId } = req.params
 
-    const modules = await courseService.getModulesBySubject(userId, subjectId)
+    // Panggil service yang baru kita update
+    const result = await courseService.getSubjectDetailWithModules(userId, subjectId)
 
     return res.status(200).json({
       success: true,
-      data: modules
+      data: result // Structure: { subject: {...}, modules: [...] }
     })
   } catch (err) {
     next(err)
@@ -157,3 +159,4 @@ export const getQuizAttempts = async (req, res, next) => {
     next(err)
   }
 }
+
