@@ -35,8 +35,8 @@ export default function ModuleItem({ module, index, isActive, onPlayVideo }: Mod
     // Card Container - Style mirip gambar (Dark Blue Card)
     <div className={`rounded-xl overflow-hidden transition-all duration-300 border border-white/5 ${
         isActive 
-            ? 'bg-[#1E293B] ring-1 ring-[#2D9CDB]' // Active state
-            : 'bg-[#1E293B] hover:bg-[#253248]' // Inactive state
+            ? 'bg-[#1E3A5F] ring-1 ring-[#2D9CDB]' // Active state
+            : 'bg-[#1E3A5F]' // Inactive state
     }`}>
       
       {/* --- Header Accordion (Tampilan Utama seperti di Gambar) --- */}
@@ -77,29 +77,48 @@ export default function ModuleItem({ module, index, isActive, onPlayVideo }: Mod
         className="duration-300 ease-in-out transition-all overflow-hidden bg-black/20"
         style={{ height: open ? answerH : '0px' }}
       >
-        <div className="p-4 pl-[5.5rem] space-y-2 border-t border-white/5">
+        <div className="p-4 space-y-2 border-t border-white/5">
           
           {/* Tombol Nonton */}
           <button 
             onClick={() => onPlayVideo(module.id)}
-            className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm transition-colors text-left
+            className={`w-full h-[62px] flex items-center justify-between gap-3 p-3 rounded-lg text-sm transition-colors text-left
                 ${isActive 
-                    ? 'bg-[#2D9CDB]/10 text-[#2D9CDB]' 
-                    : 'text-gray-300 hover:bg-white/5 hover:text-white'}
+                    ? 'bg-bg text-[#2D9CDB]' 
+                    : 'bg-bg text-white hover:bg-white/5'}
             `}
           >
-            <PlayCircle size={18} />
-            <span className="flex-1 font-medium">Tonton Materi</span>
+            <div>
+              <div className='flex items-center'>
+                <img className='w-7 mr-5' src="/course/play.svg" alt="" />
+                <div>
+                  <p className="font-bold text-lg">Tonton Materi</p>
+                  <p className="font-medium text-white/90">Pelajari materi selengkapnya</p>
+                </div>
+              </div>
+            </div>
             {isActive && <span className="text-[10px] font-bold bg-[#2D9CDB] text-white px-2 py-0.5 rounded">PLAYING</span>}
           </button>
 
           {/* Tombol Quiz */}
           <Link href={`/course/module/${module.id}/quiz`} className="block">
-            <button className="w-full flex items-center gap-3 p-3 rounded-lg text-sm text-gray-300 hover:bg-white/5 hover:text-white text-left transition-colors">
-                <HelpCircle size={18} />
-                <span className="font-medium">Kerjakan Kuis</span>
+            <button
+              className={`w-full h-[62px] flex items-center justify-between gap-3 p-3 rounded-lg text-sm transition-colors text-left
+                bg-bg text-white hover:bg-white/5
+              `}
+            >
+              <div>
+                <div className='flex items-center'>
+                  <HelpCircle size={18} className="w-7 mr-5" />
+                  <div>
+                    <p className="font-bold text-lg">Kerjakan Kuis</p>
+                    <p className="font-medium text-white/90">Uji pemahaman kamu</p>
+                  </div>
+                </div>
+              </div>
             </button>
           </Link>
+
 
         </div>
       </div>
