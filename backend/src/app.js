@@ -3,6 +3,8 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import authRoutes from './routes/auth.routes.js'
 import courseRoutes from './routes/course.routes.js'
+import paymentRoutes from './routes/payment.route.js'
+
 
 const app = express()
 
@@ -17,5 +19,6 @@ app.use(cookieParser())
 // routes
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
+app.use('/api/payment', paymentRoutes)
 
 export default app

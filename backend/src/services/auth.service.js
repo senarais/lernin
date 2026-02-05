@@ -24,13 +24,39 @@ export const loginUser = async ({email, password}) => {
 }
 
 export const getUser = async (userId) => {
-    const {data, error} = await supabaseSecret
+    // 1. Ambil data user
+    const {data: user, error} = await supabaseSecret
         .from('users')
-        .select('id, email, username')
+        .select('id, email, username, subscription_plan, subscription_expires_at')
         .eq('id', userId)
-        .single()
-    if(error) throw error
-    return data;
+        .single();
+
+    if(error) throw error;
+
+    // 2. LAZY CHECK: Cek apakah plan PRO sudah kadaluarsa?
+    if (user.subscription_plan === 'pro' && user.subscription_expires_at) {
+        const now = new Date();
+        const expiry = new Date(user.subscription_expires_at);
+
+        if (now > expiry) {
+            console.log(`User ${user.username} expired. Downgrading to FREE.`);
+            
+            // Update DB balik ke free
+            await supabaseSecret
+                .from('users')
+                .update({ 
+                    subscription_plan: 'free',
+                    subscription_expires_at: null 
+                })
+                .eq('id', userId);
+            
+            // Update object user yang mau dikirim balik biar frontend langsung tau
+            user.subscription_plan = 'free';
+            user.subscription_expires_at = null;
+        }
+    }
+
+    return user;
 }
 
 // --- NEW: GOOGLE AUTH FUNCTIONS ---
