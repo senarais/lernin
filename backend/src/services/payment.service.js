@@ -2,32 +2,36 @@ import { snap } from "../config/midtrans.js";
 import { supabaseSecret } from "../config/supabase.js";
 
 /**
- * 1. Create Snap Transaction Token
+ * 1. Create Snap Transaction Token (Dynamic)
+ * params:
+ * - user: object user
+ * - item: { type: 'plan' | 'class', id: string, name: string, price: number }
  */
-export const createTransaction = async (user) => {
-    // KITA UBAH FORMAT ORDER ID BIAR LEBIH PENDEK (< 50 Karakter)
-    // Format: PRO-{timestamp}-{random 3 digit}
-    // Contoh: PRO-1707123456789-123 (Total sekitar 20an karakter, aman)
-    const orderId = `PRO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+export const createTransaction = async (user, item) => {
+    // Format Order ID: TYPE-TIMESTAMP-RANDOM
+    // Contoh: PLAN-1708... atau CLASS-1708...
+    const prefix = item.type === 'plan' ? 'PRO' : 'CLS';
+    const orderId = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     const parameter = {
         transaction_details: {
             order_id: orderId,
-            gross_amount: 19000 // Harga Paket Pro
+            gross_amount: item.price
         },
         customer_details: {
             first_name: user.username,
             email: user.email,
         },
-        // KITA PINDAHIN USER ID KE SINI
-        // Midtrans punya fitur custom_field1, custom_field2, dst buat nyimpen data tambahan
-        custom_field1: user.id, 
-        
+        // --- CUSTOM FIELDS (PENTING BANGET) ---
+        custom_field1: user.id,      // Siapa yang beli
+        custom_field2: item.type,    // Apa tipenya ('plan' atau 'class')
+        custom_field3: item.id,      // ID itemnya (uuid class atau 'pro-plan')
+
         item_details: [{
-            id: 'plan-pro-10min',
-            price: 19000,
+            id: item.id,
+            price: item.price,
             quantity: 1,
-            name: "Paket PRO (10 Menit)"
+            name: item.name.substring(0, 50) // Midtrans ada limit panjang nama item
         }]
     };
 
@@ -36,7 +40,7 @@ export const createTransaction = async (user) => {
 };
 
 /**
- * 2. Handle Webhook dari Midtrans
+ * 2. Handle Webhook dari Midtrans (Smart Handler)
  */
 export const handleMidtransNotification = async (notificationBody) => {
     const statusResponse = await snap.transaction.notification(notificationBody);
@@ -44,44 +48,54 @@ export const handleMidtransNotification = async (notificationBody) => {
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
 
-    // AMBIL USER ID DARI CUSTOM FIELD (Bukan dari split string order_id lagi)
+    // Ambil metadata yang kita titipin tadi
     const userId = statusResponse.custom_field1;
+    const itemType = statusResponse.custom_field2; // 'plan' atau 'class'
+    const itemId = statusResponse.custom_field3;   // id barangnya
 
-    console.log(`Transaction notification received. Order ID: ${orderId}. User: ${userId}. Status: ${transactionStatus}`);
+    console.log(`Notif masuk: ${orderId} | User: ${userId} | Tipe: ${itemType}`);
 
     if (transactionStatus == 'capture' || transactionStatus == 'settlement') {
         if (fraudStatus == 'challenge') {
             return { status: 'challenge' };
         } else if (fraudStatus == 'accept' || !fraudStatus) {
             
-            if (!userId) {
-                console.error("User ID not found in custom_field1");
-                throw new Error("User ID missing from transaction");
+            if (!userId) throw new Error("User ID missing");
+
+            // === SKENARIO 1: BELI PAKET PRO ===
+            if (itemType === 'plan') {
+                const expiresAt = new Date();
+                expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Logic 10 menit lu
+
+                const { error } = await supabaseSecret
+                    .from('users')
+                    .update({
+                        subscription_plan: 'pro',
+                        subscription_expires_at: expiresAt.toISOString()
+                    })
+                    .eq('id', userId);
+                
+                if (error) throw error;
+            } 
+            
+            // === SKENARIO 2: BELI LIVE CLASS SATUAN ===
+            else if (itemType === 'class') {
+                // Insert ke tabel kepemilikan
+                // Kita pake upsert/ignore biar kalo notif midtrans masuk 2x gak error
+                const { error } = await supabaseSecret
+                    .from('user_live_classes')
+                    .upsert({
+                        user_id: userId,
+                        live_class_id: itemId,
+                        purchased_at: new Date().toISOString()
+                    }, { onConflict: 'user_id, live_class_id' }); // Abaikan kalo udah ada
+
+                if (error) throw error;
             }
 
-            // Hitung waktu expire (Sekarang + 10 Menit)
-            const expiresAt = new Date();
-            expiresAt.setMinutes(expiresAt.getMinutes() + 10);
-
-            // Update Database via Supabase Secret
-            const { error } = await supabaseSecret
-                .from('users')
-                .update({
-                    subscription_plan: 'pro',
-                    subscription_expires_at: expiresAt.toISOString()
-                })
-                .eq('id', userId);
-
-            if (error) {
-                console.error("Gagal update user pro:", error);
-                throw error;
-            }
-
-            return { status: 'success', userId };
+            return { status: 'success', userId, itemType };
         }
-    } else if (transactionStatus == 'cancel' || transactionStatus == 'deny' || transactionStatus == 'expire') {
-        return { status: 'failed' };
-    } else if (transactionStatus == 'pending') {
-        return { status: 'pending' };
     }
+    
+    return { status: 'processed' };
 };
