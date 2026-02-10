@@ -2,10 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { Clock, Loader2, PlayCircle, Lock } from 'lucide-react'
+import { Clock, Loader2, MessageCircle, Lock } from 'lucide-react' // Ganti icon Play jadi MessageCircle (WA)
 
-// Tipe data sesuai response API Backend
 type LiveClass = {
   id: string
   title: string
@@ -14,28 +12,27 @@ type LiveClass = {
   price: number
   schedule: string
   image_url: string
+  wa_link?: string // Tambah ini (bisa null/undefined)
   is_owned: boolean
   is_accessible: boolean
 }
 
 interface LiveClassCardProps {
   data: LiveClass
-  isMyClassPage?: boolean // Flag untuk membedakan tampilan katalog vs my class
+  isMyClassPage?: boolean 
 }
 
 export default function LiveClassCard({ data, isMyClassPage = false }: LiveClassCardProps) {
   const [loadingPay, setLoadingPay] = useState(false)
 
-  // Format Tanggal (Pengganti '18 Hours' biar dinamis sesuai DB)
   const formattedDate = new Date(data.schedule).toLocaleDateString('id-ID', {
     day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
   })
 
-  // --- Logic Payment (Midtrans) ---
+  // Logic Payment Midtrans (Sama kayak sebelumnya)
   const handleBuy = async () => {
     setLoadingPay(true)
     try {
-      // 1. Minta Token
       const res = await fetch('http://localhost:5000/api/payment/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,10 +40,8 @@ export default function LiveClassCard({ data, isMyClassPage = false }: LiveClass
         credentials: 'include'
       })
       const json = await res.json()
-      
       if (!res.ok) throw new Error(json.error)
 
-      // 2. Munculin Popup
       if (window.snap) {
         window.snap.pay(json.token, {
           onSuccess: function() {
@@ -67,15 +62,14 @@ export default function LiveClassCard({ data, isMyClassPage = false }: LiveClass
 
   return (
     <div className="bg-[#1E293B] rounded-3xl overflow-hidden shadow-lg border border-white/5 hover:border-[#5CD2DD]/50 transition-all group flex flex-col h-full">
-      {/* --- Image Section --- */}
+      {/* Image Section */}
       <div className="relative w-full aspect-video bg-gray-700">
         <Image 
-          src={data.image_url || '/landing/hero.png'} // Fallback image
+          src={data.image_url || '/landing/hero.png'} 
           alt={data.title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        {/* Badge Harga jika belum beli */}
         {!data.is_accessible && (
           <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold border border-white/10">
             Rp {data.price.toLocaleString('id-ID')}
@@ -83,7 +77,7 @@ export default function LiveClassCard({ data, isMyClassPage = false }: LiveClass
         )}
       </div>
 
-      {/* --- Content Section --- */}
+      {/* Content Section */}
       <div className="p-6 flex flex-col flex-1">
         <h3 className="text-xl font-bold text-white mb-4 line-clamp-2 leading-tight min-h-[3.5rem]">
           {data.title}
@@ -99,19 +93,30 @@ export default function LiveClassCard({ data, isMyClassPage = false }: LiveClass
           </div>
         </div>
 
-        {/* Spacer biar button selalu di bawah */}
         <div className="flex-1" />
 
-        {/* --- Action Button --- */}
+        {/* --- ACTION BUTTON --- */}
         {data.is_accessible ? (
-          // KALO UDAH PUNYA -> Link ke Detail Page
-          <Link href={`/live-class/${data.id}`} className="w-full">
-             <button className="w-full py-3 rounded-xl bg-[#5CD2DD] hover:bg-[#4bc0cb] text-slate-900 font-bold text-sm transition-all flex items-center justify-center gap-2">
-                Join Live Class <PlayCircle size={16} />
+          // KALO UDAH PUNYA -> Langsung ke WA Link
+          <a 
+            href={data.wa_link || '#'} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-full"
+            onClick={(e) => {
+                if (!data.wa_link) {
+                    e.preventDefault();
+                    alert("Link WhatsApp belum tersedia untuk kelas ini.");
+                }
+            }}
+          >
+             <button className="w-full py-3 rounded-xl bg-[#25D366] hover:bg-[#20b857] text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/20">
+                {/* Pakai Warna Hijau WA (#25D366) */}
+                Join WhatsApp Group <MessageCircle size={18} />
              </button>
-          </Link>
+          </a>
         ) : (
-          // KALO BELUM PUNYA -> Trigger Payment
+          // KALO BELUM PUNYA -> Trigger Payment (Midtrans)
           <button 
             onClick={handleBuy}
             disabled={loadingPay}

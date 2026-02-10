@@ -4,48 +4,60 @@ import { supabaseSecret } from "../config/supabase.js";
 // 1. Get All Classes (Catalog)
 // Kita kasih flag 'is_owned' dan 'is_accessible' buat UI
 export const getAllClasses = async (userId) => {
-    // Ambil data user buat cek plan
+    // Cek User Plan
     const { data: user } = await supabaseSecret.from('users').select('subscription_plan, subscription_expires_at').eq('id', userId).single();
-    
-    // Cek status PRO (Lazy Check Logic Sederhana)
     const isPro = user.subscription_plan === 'pro' && new Date(user.subscription_expires_at) > new Date();
 
-    // Ambil semua kelas
-    const { data: classes } = await supabaseSecret.from('live_classes').select('id, title, description, price, schedule, image_url, instructor_name');
+    // Ambil data kelas (TAMBAH wa_link di select)
+    const { data: classes } = await supabaseSecret
+        .from('live_classes')
+        .select('id, title, description, price, schedule, image_url, instructor_name, wa_link'); // <--- Tambah wa_link
 
-    // Ambil kelas yang udah dibeli user
+    // Ambil kepemilikan
     const { data: owned } = await supabaseSecret.from('user_live_classes').select('live_class_id').eq('user_id', userId);
     const ownedIds = owned.map(o => o.live_class_id);
 
     // Map data
-    return classes.map(c => ({
-        ...c,
-        is_owned: ownedIds.includes(c.id),
-        is_accessible: isPro || ownedIds.includes(c.id) // Bisa akses kalau PRO atau Udah Beli
-    }));
+    return classes.map(c => {
+        const isOwned = ownedIds.includes(c.id);
+        const isAccessible = isPro || isOwned;
+
+        return {
+            id: c.id,
+            title: c.title,
+            description: c.description,
+            price: c.price,
+            schedule: c.schedule,
+            image_url: c.image_url,
+            instructor_name: c.instructor_name,
+            is_owned: isOwned,
+            is_accessible: isAccessible,
+            // LOGIC PENTING: Cuma kasih wa_link kalau punya akses
+            wa_link: isAccessible ? c.wa_link : null 
+        };
+    });
 };
 
-// 2. Get My Classes (Hanya yang bisa diakses)
+// 2. Get My Classes - UPDATE DISINI
 export const getMyClasses = async (userId) => {
-    // Sama logicnya, cek PRO dulu
     const { data: user } = await supabaseSecret.from('users').select('subscription_plan, subscription_expires_at').eq('id', userId).single();
     const isPro = user.subscription_plan === 'pro' && new Date(user.subscription_expires_at) > new Date();
 
     if (isPro) {
-        // Kalau PRO, return SEMUA kelas yang ada di database
-        // Karena PRO = Punya Semua
+        // Kalau PRO, return semua data (termasuk wa_link karena select *)
         const { data } = await supabaseSecret.from('live_classes').select('*');
         return data;
     } else {
-        // Kalau FREE, return cuma yang ada di tabel user_live_classes
+        // Kalau FREE, return yang dibeli
         const { data } = await supabaseSecret
             .from('user_live_classes')
             .select(`
                 purchased_at,
                 live_classes (*) 
-            `) // Join ke tabel live_classes
+            `)
             .eq('user_id', userId);
         
+        // Flatten data
         return data.map(d => d.live_classes);
     }
 };
