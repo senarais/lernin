@@ -193,3 +193,69 @@ export const getTryoutResult = async (userId, sessionId) => {
     
     return data;
 };
+
+// ... kode sebelumnya ...
+
+// 7. GET REVIEW (Pembahasan Tryout)
+export const getTryoutReview = async (userId, sessionId) => {
+    // 1. Validasi Kepemilikan Sesi
+    const { data: session, error: sessionErr } = await supabaseSecret
+        .from('tryout_sessions')
+        .select('tryout_id, tryouts(title)')
+        .eq('id', sessionId)
+        .eq('user_id', userId)
+        .single();
+    if (sessionErr) throw new Error("Sesi tidak ditemukan atau akses ditolak.");
+
+    // 2. Ambil Sesi per Pelajaran
+    const { data: sectionSessions, error: secSessErr } = await supabaseSecret
+        .from('tryout_section_sessions')
+        .select('id, section_id, tryout_sections(title, order_index)')
+        .eq('session_id', sessionId)
+        .order('tryout_sections(order_index)', { ascending: true });
+
+    if (!sectionSessions || sectionSessions.length === 0) return { tryout_title: session.tryouts.title, sections: [] };
+
+    // 3. Ambil Semua Soal
+    const sectionIds = sectionSessions.map(s => s.section_id);
+    const { data: questions } = await supabaseSecret
+        .from('tryout_questions')
+        .select('*')
+        .in('section_id', sectionIds);
+
+    // 4. Ambil Jawaban User
+    const sectionSessionIds = sectionSessions.map(s => s.id);
+    const { data: answers } = await supabaseSecret
+        .from('tryout_answers')
+        .select('question_id, selected_option, is_correct')
+        .in('section_session_id', sectionSessionIds);
+
+    // 5. Mapping Data (Gabungin Soal, Pembahasan, Kunci, dan Jawaban User)
+    const reviewData = sectionSessions.map(secSess => {
+        const secQuestions = questions.filter(q => q.section_id === secSess.section_id);
+        
+        const mappedQuestions = secQuestions.map(q => {
+            const userAnswer = answers.find(a => a.question_id === q.id);
+            return {
+                id: q.id,
+                question_text: q.question_text,
+                option_a: q.option_a, option_b: q.option_b, option_c: q.option_c, option_d: q.option_d, option_e: q.option_e,
+                correct_option: q.correct_option,
+                explanation: q.explanation,
+                user_answer: userAnswer ? userAnswer.selected_option : null,
+                is_correct: userAnswer ? userAnswer.is_correct : false
+            };
+        });
+
+        return {
+            section_id: secSess.section_id,
+            title: secSess.tryout_sections.title,
+            questions: mappedQuestions
+        };
+    });
+
+    return {
+        tryout_title: session.tryouts.title,
+        sections: reviewData
+    };
+};

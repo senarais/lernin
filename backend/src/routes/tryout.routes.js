@@ -15,6 +15,9 @@ router.post('/section/:sectionSessionId/submit', tryoutController.submitSection)
 
 // Submit total akhir
 router.post('/:sessionId/finish', tryoutController.finishTryout);
+
+// Result dan Review
 router.get('/result/:sessionId', tryoutController.getResult);
+router.get('/review/:sessionId', tryoutController.getReview);
 
 export default router;

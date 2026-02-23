@@ -64,3 +64,13 @@ export const getResult = async (req, res) => {
         res.status(404).json({ error: err.message }); 
     }
 };
+
+export const getReview = async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+        const data = await tryoutService.getTryoutReview(req.user.id, sessionId);
+        res.json({ success: true, data });
+    } catch (err) { 
+        res.status(404).json({ error: err.message }); 
+    }
+};

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Award, ArrowLeft, Loader2, BarChart2 } from 'lucide-react'
+import { Award, ArrowLeft, Loader2, BarChart2, BookOpen } from 'lucide-react' // Tambah BookOpen
 
 export default function TryoutResult() {
   const { sessionId } = useParams()
@@ -33,7 +33,6 @@ export default function TryoutResult() {
 
   if (loading) return <div className="min-h-screen bg-bg flex justify-center items-center"><Loader2 className="animate-spin text-[#5CD2DD] w-12 h-12" /></div>
 
-  // Kalau fetch gagal atau datanya belum ada (null)
   if (!result) return (
       <div className="min-h-screen bg-bg flex flex-col justify-center items-center text-white">
           <p className="mb-4">Hasil tryout tidak ditemukan.</p>
@@ -44,38 +43,52 @@ export default function TryoutResult() {
   return (
     <div className="min-h-screen bg-bg text-white font-sans p-4">
       <div className="max-w-4xl mx-auto pt-10">
-          <Link href="/tryout" className="flex items-center gap-2 text-gray-400 hover:text-white mb-8">
+          <Link href="/tryout" className="flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors w-max">
               <ArrowLeft size={18} /> Kembali ke Daftar Tryout
           </Link>
 
           <div className="bg-[#1E293B] border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#5CD2DD]/10 blur-[100px] rounded-full" />
+              {/* Efek Cahaya di Background */}
+              <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#5CD2DD]/10 blur-[100px] rounded-full pointer-events-none" />
               
-              <div className="w-24 h-24 mx-auto bg-[#5CD2DD]/20 rounded-full flex items-center justify-center mb-6 border border-[#5CD2DD]/50">
+              <div className="w-24 h-24 mx-auto bg-[#5CD2DD]/10 rounded-full flex items-center justify-center mb-6 border border-[#5CD2DD]/30 shadow-[0_0_30px_rgba(92,210,221,0.15)]">
                   <Award size={48} className="text-[#5CD2DD]" />
               </div>
               
               <h1 className="text-3xl font-bold mb-2">Tryout Selesai!</h1>
               <p className="text-gray-400 mb-8">Berikut adalah estimasi skor IRT kamu.</p>
 
-              <div className="inline-block bg-bg border border-white/10 rounded-2xl p-8 mb-10 shadow-inner">
-                  <p className="text-gray-400 font-medium mb-2">Total Skor Nasional</p>
-                  <p className="text-6xl font-black text-[#5CD2DD]">{result.total_score}</p>
+              {/* Kotak Total Skor */}
+              <div className="inline-block bg-bg border border-white/5 rounded-3xl p-8 mb-12 shadow-inner min-w-[250px]">
+                  <p className="text-gray-400 font-medium mb-3">Total Skor Nasional</p>
+                  <p className="text-6xl font-black text-[#5CD2DD] tracking-tight">
+                      {/* Pastikan skor dirender rapi (opsional: toFixed(2) kalau formatnya desimal panjang) */}
+                      {Number(result.total_score).toFixed(2)}
+                  </p>
               </div>
 
               <div className="text-left">
-                  <h3 className="text-xl font-bold mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
+                  <h3 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
                       <BarChart2 className="text-[#5CD2DD]" /> Detail Skor Sub-tes
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Mapping langsung dari JSON database yang udah diparsing */}
+                  
+                  {/* Grid Skor (Dikasih margin bottom mb-10 biar ada napas sebelum tombol) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                       {result.section_scores && Object.entries(result.section_scores).map(([title, score]: [string, any]) => (
-                          <div key={title} className="bg-bg p-4 rounded-xl border border-white/5 flex justify-between items-center">
-                              <span className="text-gray-300 text-sm font-medium">{title}</span>
-                              <span className="font-bold text-[#5CD2DD] text-lg">{score}</span>
+                          <div key={title} className="bg-bg p-5 rounded-2xl border border-white/5 flex justify-between items-center hover:border-white/10 transition-colors">
+                              <span className="text-gray-300 text-sm font-medium pr-4">{title}</span>
+                              <span className="font-bold text-[#5CD2DD] text-xl">{score}</span>
                           </div>
                       ))}
                   </div>
+
+                  {/* Tombol Lihat Pembahasan */}
+                  <Link href={`/tryout/review/${sessionId}`} className="block w-full">
+                      <button className="w-full py-4 rounded-2xl bg-[#5CD2DD]/5 border border-[#5CD2DD]/30 text-[#5CD2DD] hover:bg-[#5CD2DD] hover:text-slate-900 hover:shadow-[0_0_30px_rgba(92,210,221,0.3)] font-bold transition-all duration-300 flex justify-center items-center gap-3 group">
+                          <BookOpen size={20} className="group-hover:scale-110 transition-transform duration-300" /> 
+                          Lihat Pembahasan Lengkap
+                      </button>
+                  </Link>
               </div>
           </div>
       </div>
