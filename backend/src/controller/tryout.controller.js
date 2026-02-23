@@ -2,9 +2,12 @@ import * as tryoutService from '../services/tryout.service.js';
 
 export const listTryouts = async (req, res) => {
     try {
-        const data = await tryoutService.getAvailableTryouts();
+        // Oper req.user.id ke dalam service
+        const data = await tryoutService.getAvailableTryouts(req.user.id);
         res.json({ success: true, data });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
 };
 
 export const startTryout = async (req, res) => {
@@ -48,4 +51,16 @@ export const finishTryout = async (req, res) => {
         const result = await tryoutService.finishTryout(req.user.id, sessionId);
         res.json({ success: true, result });
     } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+export const getResult = async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+        // Ambil data result pake service yang baru dibuat
+        const data = await tryoutService.getTryoutResult(req.user.id, sessionId);
+        
+        res.json({ success: true, data });
+    } catch (err) { 
+        res.status(404).json({ error: err.message }); 
+    }
 };

@@ -3,13 +3,35 @@ import { supabaseSecret } from "../config/supabase.js";
 // GRACE PERIOD (Toleransi delay internet 15 detik)
 const GRACE_PERIOD_MS = 15000; 
 
-export const getAvailableTryouts = async () => {
-    const { data, error } = await supabaseSecret
+export const getAvailableTryouts = async (userId) => {
+    // 1. Ambil list semua tryout yang published
+    const { data: tryouts, error } = await supabaseSecret
         .from('tryouts')
         .select(`id, title, description, tryout_sections(id, title, duration_minutes)`)
         .eq('is_published', true);
     if (error) throw error;
-    return data;
+
+    // 2. Ambil hasil ujian (tryout_results) khusus milik user ini
+    const { data: results, error: resultError } = await supabaseSecret
+        .from('tryout_results')
+        .select('tryout_id, session_id, total_score')
+        .eq('user_id', userId);
+    
+    if (resultError) throw resultError;
+
+    // 3. Gabungkan data: Cek apakah user udah punya result di tryout tersebut
+    return tryouts.map(t => {
+        const userResult = results.find(r => r.tryout_id === t.id);
+        
+        return {
+            ...t,
+            // Jika userResult ada, kirim data skor dan session_id ke frontend
+            user_result: userResult ? {
+                session_id: userResult.session_id,
+                total_score: userResult.total_score
+            } : null
+        };
+    });
 };
 
 // 1. INIT MASTER SESSION (Pas user klik "Mulai Tryout")
@@ -154,4 +176,20 @@ export const finishTryout = async (userId, sessionId) => {
     await supabaseSecret.from('tryout_sessions').update({ is_completed: true }).eq('id', sessionId);
 
     return result;
+};
+
+// 6. GET RESULT (Buat nampilin halaman hasil asli)
+export const getTryoutResult = async (userId, sessionId) => {
+    const { data, error } = await supabaseSecret
+        .from('tryout_results')
+        .select('*')
+        .eq('session_id', sessionId)
+        .eq('user_id', userId) // Validasi kepemilikan
+        .single();
+
+    if (error) {
+        throw new Error("Hasil tryout tidak ditemukan atau Anda tidak memiliki akses.");
+    }
+    
+    return data;
 };

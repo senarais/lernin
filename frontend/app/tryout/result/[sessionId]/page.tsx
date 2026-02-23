@@ -13,30 +13,33 @@ export default function TryoutResult() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        // Kita perlu fetch data result ini dari backend. 
-        // Backend kamu di endpoint finish Tryout mereturn data tryout_results.
-        // Asumsi kita hit endpoint /api/auth/me untuk dpt result history, 
-        // atau idealnya kamu buat `GET /api/tryout/result/:sessionId` di backend.
-        // Karena di instruction ga ada GET result, kita anggap datanya kita passing / request custom.
-        
-        // PENTING: Karena instruksi backend sebelumnya cuma ada POST /finish, 
-        // saya buat mock fetcher. Idealnya minta backend bikin GET /api/tryout/result/:sessionId
         const res = await fetch(`http://localhost:5000/api/tryout/result/${sessionId}`, { credentials: 'include' })
         const json = await res.json()
-        setResult(json.data)
-      } catch (e) { console.error(e) } finally { setLoading(false) }
+        
+        if (json.success) {
+            setResult(json.data)
+        } else {
+            console.error(json.error)
+        }
+      } catch (e) { 
+        console.error(e) 
+      } finally { 
+        setLoading(false) 
+      }
     }
+    
     fetchResult()
   }, [sessionId])
 
-  // CATATAN: Karena endpoint GET Result belum dibuat di instruksi sebelumnya, 
-  // Untuk keperluan UI ini saya buatkan render statis sementara jika fetch gagal.
-  const dummyResult = result || {
-      total_score: 650.50,
-      section_scores: { "Kemampuan Penalaran Umum": 700, "Pengetahuan Kuantitatif": 600, "Literasi Bahasa Indonesia": 650 }
-  }
-
   if (loading) return <div className="min-h-screen bg-bg flex justify-center items-center"><Loader2 className="animate-spin text-[#5CD2DD] w-12 h-12" /></div>
+
+  // Kalau fetch gagal atau datanya belum ada (null)
+  if (!result) return (
+      <div className="min-h-screen bg-bg flex flex-col justify-center items-center text-white">
+          <p className="mb-4">Hasil tryout tidak ditemukan.</p>
+          <Link href="/tryout" className="px-6 py-2 bg-[#5CD2DD] text-slate-900 font-bold rounded-lg">Kembali ke Daftar</Link>
+      </div>
+  )
 
   return (
     <div className="min-h-screen bg-bg text-white font-sans p-4">
@@ -57,7 +60,7 @@ export default function TryoutResult() {
 
               <div className="inline-block bg-bg border border-white/10 rounded-2xl p-8 mb-10 shadow-inner">
                   <p className="text-gray-400 font-medium mb-2">Total Skor Nasional</p>
-                  <p className="text-6xl font-black text-[#5CD2DD]">{dummyResult.total_score}</p>
+                  <p className="text-6xl font-black text-[#5CD2DD]">{result.total_score}</p>
               </div>
 
               <div className="text-left">
@@ -65,7 +68,8 @@ export default function TryoutResult() {
                       <BarChart2 className="text-[#5CD2DD]" /> Detail Skor Sub-tes
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Object.entries(dummyResult.section_scores).map(([title, score]: [string, any]) => (
+                      {/* Mapping langsung dari JSON database yang udah diparsing */}
+                      {result.section_scores && Object.entries(result.section_scores).map(([title, score]: [string, any]) => (
                           <div key={title} className="bg-bg p-4 rounded-xl border border-white/5 flex justify-between items-center">
                               <span className="text-gray-300 text-sm font-medium">{title}</span>
                               <span className="font-bold text-[#5CD2DD] text-lg">{score}</span>

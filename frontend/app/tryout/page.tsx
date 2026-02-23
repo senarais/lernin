@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronRight, FileText, Loader2, Clock } from 'lucide-react'
+import { ChevronRight, FileText, Loader2, Clock, CheckCircle } from 'lucide-react'
 import Navbar from '@/app/components/Navbar'
 
 export default function TryoutCatalog() {
@@ -49,15 +49,23 @@ export default function TryoutCatalog() {
         ) : (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {tryouts.map((to) => {
-                    // Hitung total durasi dari semua section
                     const totalDuration = to.tryout_sections.reduce((acc: number, curr: any) => acc + curr.duration_minutes, 0)
                     
+                    // Cek apakah user sudah menyelesaikan tryout ini
+                    const isCompleted = !!to.user_result;
+                    
                     return (
-                        <div key={to.id} className="bg-[#1E293B] rounded-3xl p-6 shadow-lg border border-white/5 hover:border-[#5CD2DD]/50 transition-all flex flex-col">
-                            <h3 className="text-xl font-bold text-white mb-2">{to.title}</h3>
+                        <div key={to.id} className={`bg-[#1E293B] rounded-3xl p-6 shadow-lg border transition-all flex flex-col ${isCompleted ? 'border-[#5CD2DD]/30' : 'border-white/5 hover:border-[#5CD2DD]/50'}`}>
+                            
+                            <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-xl font-bold text-white">{to.title}</h3>
+                                {/* Jika selesai, tampilkan icon checkmark */}
+                                {isCompleted && <CheckCircle size={24} className="text-[#5CD2DD]" />}
+                            </div>
+                            
                             <p className="text-gray-400 text-sm mb-6 line-clamp-3">{to.description}</p>
                             
-                            <div className="flex flex-col gap-2 mb-8">
+                            <div className="flex flex-col gap-2 mb-6">
                                 <div className="flex items-center gap-2 text-sm text-gray-300">
                                     <FileText size={16} className="text-[#5CD2DD]" /> {to.tryout_sections.length} Sub-tes
                                 </div>
@@ -65,13 +73,33 @@ export default function TryoutCatalog() {
                                     <Clock size={16} className="text-[#5CD2DD]" /> {totalDuration} Menit
                                 </div>
                             </div>
-                            
+
                             <div className="flex-1" />
-                            <Link href={`/tryout/${to.id}`}>
-                                <button className="w-full py-3 rounded-xl bg-[#1E293B] border border-[#5CD2DD] text-[#5CD2DD] hover:bg-[#5CD2DD] hover:text-slate-900 font-bold text-sm transition-all">
-                                    Mulai Simulasi
-                                </button>
-                            </Link>
+
+                            {/* LOGIC KONDISI: Jika sudah selesai tampilkan skor dan tombol "Lihat Hasil" */}
+                            {isCompleted ? (
+                                <div className="space-y-4 mt-4">
+                                    <div className="p-4 rounded-xl bg-[#5CD2DD]/10 border border-[#5CD2DD]/20 flex justify-between items-center">
+                                        <span className="text-[#5CD2DD] font-medium text-sm">Skor Terakhir:</span>
+                                        <span className="text-2xl font-black text-[#5CD2DD]">{to.user_result.total_score}</span>
+                                    </div>
+                                    <Link href={`/tryout/result/${to.user_result.session_id}`}>
+                                        <button className="w-full py-3 rounded-xl bg-[#5CD2DD] text-slate-900 font-bold text-sm transition-all hover:bg-[#4bc0cb] shadow-lg shadow-[#5CD2DD]/20">
+                                            Lihat Hasil Detail
+                                        </button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                /* Jika belum, tampilkan tombol "Mulai Simulasi" */
+                                <div className="mt-4">
+                                    <Link href={`/tryout/${to.id}`}>
+                                        <button className="w-full py-3 rounded-xl bg-[#1E293B] border border-[#5CD2DD] text-[#5CD2DD] hover:bg-[#5CD2DD] hover:text-slate-900 font-bold text-sm transition-all">
+                                            Mulai Simulasi
+                                        </button>
+                                    </Link>
+                                </div>
+                            )}
+
                         </div>
                     )
                 })}
