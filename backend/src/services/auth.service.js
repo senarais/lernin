@@ -27,7 +27,7 @@ export const getUser = async (userId) => {
     // 1. Ambil data user
     const {data: user, error} = await supabaseSecret
         .from('users')
-        .select('id, email, username, subscription_plan, subscription_expires_at')
+        .select('id, email, username, role, subscription_plan, subscription_expires_at')
         .eq('id', userId)
         .single();
 
