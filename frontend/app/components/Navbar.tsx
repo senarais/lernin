@@ -15,8 +15,8 @@ const Navbar = () => {
 
     const navigation: NavigationItem[] = [
         { title: "E-Learning", path: "/course" },
-        { title: "Live Class", path: "/integrations" },
-        { title: "Tryout", path: "/customers" },
+        { title: "Live Class", path: "/live-class" },
+        { title: "Tryout", path: "/tryout" },
         { title: "Tracker", path: "/pricing" }
     ]
 
@@ -106,7 +106,7 @@ const Navbar = () => {
                             <li>
                                 <Link
                                     href="/login"
-                                    className="block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg md:border-none"
+                                    className="block py-3 text-center text-white hover:text-third border rounded-lg md:border-none"
                                 >
                                     Log in
                                 </Link>

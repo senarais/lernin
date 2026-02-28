@@ -6,6 +6,7 @@ import courseRoutes from './routes/course.routes.js'
 import paymentRoutes from './routes/payment.route.js'
 import liveClassRoutes from './routes/liveClass.routes.js'
 import tryoutRoutes from './routes/tryout.routes.js'
+import adminRoutes from './routes/admin.routes.js'
 
 
 const app = express()
@@ -20,6 +21,7 @@ app.use(cookieParser())
 
 // routes
 app.use('/api/auth', authRoutes)
+app.use('/api/admin', adminRoutes);
 app.use('/api/courses', courseRoutes)
 app.use('/api/payment', paymentRoutes)
 app.use('/api/live-class', liveClassRoutes)

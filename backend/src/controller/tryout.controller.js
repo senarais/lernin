@@ -68,6 +68,7 @@ export const getResult = async (req, res) => {
 export const getReview = async (req, res) => {
     try {
         const { sessionId } = req.params;
+        console.log(sessionId)
         const data = await tryoutService.getTryoutReview(req.user.id, sessionId);
         res.json({ success: true, data });
     } catch (err) { 

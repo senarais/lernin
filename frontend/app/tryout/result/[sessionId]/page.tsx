@@ -84,8 +84,7 @@ export default function TryoutResult() {
 
                   {/* Tombol Lihat Pembahasan */}
                   <Link href={`/tryout/review/${sessionId}`} className="block w-full">
-                      <button className="w-full py-4 rounded-2xl bg-[#5CD2DD]/5 border border-[#5CD2DD]/30 text-[#5CD2DD] hover:bg-[#5CD2DD] hover:text-slate-900 hover:shadow-[0_0_30px_rgba(92,210,221,0.3)] font-bold transition-all duration-300 flex justify-center items-center gap-3 group">
-                          <BookOpen size={20} className="group-hover:scale-110 transition-transform duration-300" /> 
+                      <button className="w-full py-4 rounded-2xl bg-[#1E293B] border border-[#5CD2DD] text-[#5CD2DD] hover:bg-[#5CD2DD] hover:text-slate-900 font-bold transition-all flex justify-center items-center gap-2">
                           Lihat Pembahasan Lengkap
                       </button>
                   </Link>
