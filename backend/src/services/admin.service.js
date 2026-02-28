@@ -64,6 +64,59 @@ export const createTryoutQuestion = async (sectionId, data) => {
     return result;
 };
 
+// --- GET FULL TRYOUT (KHUSUS ADMIN) ---
+export const getAllTryoutsAdmin = async () => {
+    const { data, error } = await supabaseSecret
+        .from('tryouts')
+        .select('*')
+        .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+};
+
+export const getTryoutDetailAdmin = async (tryoutId) => {
+    // Ambil Tryout + Sections + Questions
+    const { data, error } = await supabaseSecret
+        .from('tryouts')
+        .select(`
+            id, title, description, is_published,
+            tryout_sections (
+                id, title, duration_minutes, order_index,
+                tryout_questions ( id, question_text, option_a, option_b, option_c, option_d, option_e, correct_option, explanation )
+            )
+        `)
+        .eq('id', tryoutId)
+        .order('order_index', { referencedTable: 'tryout_sections', ascending: true })
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+// --- MELENGKAPI UPDATE & DELETE UNTUK SECTION DAN QUESTION ---
+export const updateTryoutSection = async (id, data) => {
+    const { data: result, error } = await supabaseSecret.from('tryout_sections').update(data).eq('id', id).select().single();
+    if (error) throw error;
+    return result;
+};
+
+export const deleteTryoutSection = async (id) => {
+    const { error } = await supabaseSecret.from('tryout_sections').delete().eq('id', id);
+    if (error) throw error;
+    return { message: "Section deleted" };
+};
+
+export const updateTryoutQuestion = async (id, data) => {
+    const { data: result, error } = await supabaseSecret.from('tryout_questions').update(data).eq('id', id).select().single();
+    if (error) throw error;
+    return result;
+};
+
+export const deleteTryoutQuestion = async (id) => {
+    const { error } = await supabaseSecret.from('tryout_questions').delete().eq('id', id);
+    if (error) throw error;
+    return { message: "Question deleted" };
+};
+
 
 // ==========================================
 // 3. MODULE: E-LEARNING (Course -> Subject -> Module)

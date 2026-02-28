@@ -16,15 +16,21 @@ router.delete('/live-class/:id', adminController.removeLiveClass);
 
 // --- TRYOUT ROUTES ---
 // 1. Master Tryout
+router.get('/tryout', adminController.fetchTryoutsAdmin); // BARU
+router.get('/tryout/:tryoutId', adminController.fetchTryoutDetailAdmin); // BARU
 router.post('/tryout', adminController.addTryout);
 router.put('/tryout/:id', adminController.editTryout);
 router.delete('/tryout/:id', adminController.removeTryout);
 
-// 2. Mapel Tryout (Nempel ke Tryout ID)
+// 2. Mapel Tryout (Section)
 router.post('/tryout/:tryoutId/section', adminController.addTryoutSection);
+router.put('/tryout-section/:id', adminController.editTryoutSection); // BARU
+router.delete('/tryout-section/:id', adminController.removeTryoutSection); // BARU
 
-// 3. Soal Tryout (Nempel ke Section ID)
+// 3. Soal Tryout (Question)
 router.post('/tryout/section/:sectionId/question', adminController.addTryoutQuestion);
+router.put('/tryout-question/:id', adminController.editTryoutQuestion); // BARU
+router.delete('/tryout-question/:id', adminController.removeTryoutQuestion); // BARU
 
 // ==========================================
 // E-LEARNING ROUTES

@@ -60,6 +60,50 @@ export const addTryoutQuestion = async (req, res) => {
     } catch (err) { res.status(400).json({ error: err.message }); }
 };
 
+// --- GET HANDLERS ---
+export const fetchTryoutsAdmin = async (req, res) => {
+    try {
+        const data = await adminService.getAllTryoutsAdmin();
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+export const fetchTryoutDetailAdmin = async (req, res) => {
+    try {
+        const data = await adminService.getTryoutDetailAdmin(req.params.tryoutId);
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+// --- MELENGKAPI UPDATE & DELETE CONTROLLER ---
+export const editTryoutSection = async (req, res) => {
+    try {
+        const result = await adminService.updateTryoutSection(req.params.id, req.body);
+        res.json({ success: true, data: result });
+    } catch (err) { res.status(400).json({ error: err.message }); }
+};
+
+export const removeTryoutSection = async (req, res) => {
+    try {
+        await adminService.deleteTryoutSection(req.params.id);
+        res.json({ success: true, message: "Deleted" });
+    } catch (err) { res.status(400).json({ error: err.message }); }
+};
+
+export const editTryoutQuestion = async (req, res) => {
+    try {
+        const result = await adminService.updateTryoutQuestion(req.params.id, req.body);
+        res.json({ success: true, data: result });
+    } catch (err) { res.status(400).json({ error: err.message }); }
+};
+
+export const removeTryoutQuestion = async (req, res) => {
+    try {
+        await adminService.deleteTryoutQuestion(req.params.id);
+        res.json({ success: true, message: "Deleted" });
+    } catch (err) { res.status(400).json({ error: err.message }); }
+};
+
 // ==========================================
 // E-LEARNING CONTROLLERS
 // ==========================================
