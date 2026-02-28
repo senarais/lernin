@@ -31,14 +31,17 @@ router.post('/tryout/section/:sectionId/question', adminController.addTryoutQues
 // ==========================================
 
 // --- 1. COURSE ---
+router.get('/course', adminController.fetchCourses); // <-- TAMBAHAN BARU
 router.post('/course', adminController.addCourse);
 router.put('/course/:id', adminController.editCourse);
 router.delete('/course/:id', adminController.removeCourse);
 
 // --- 2. SUBJECT (Nempel ke Course) ---
+router.get('/course/:courseId/subject', adminController.fetchSubjects); // <-- TAMBAHAN BARU
 router.post('/course/:courseId/subject', adminController.addSubject);
 router.put('/subject/:id', adminController.editSubject);
 router.delete('/subject/:id', adminController.removeSubject);
+router.get('/subject/:subjectId/modules', adminController.fetchSubjectDetail);
 
 // --- 3. MODULE (Nempel ke Subject) ---
 router.post('/subject/:subjectId/module', adminController.addModule);

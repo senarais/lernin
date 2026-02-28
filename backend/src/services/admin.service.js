@@ -172,3 +172,48 @@ export const deleteQuizQuestion = async (id) => {
     if (error) throw error;
     return { message: "Question deleted successfully" };
 };
+
+export const getAllCourses = async () => {
+    const { data, error } = await supabaseSecret
+        .from('courses')
+        .select('*')
+        .order('created_at', { ascending: true });
+    if (error) throw error;
+    return data;
+};
+
+// --- GET DATA KHUSUS ADMIN ---
+export const getSubjectsByCourse = async (courseId) => {
+    const { data, error } = await supabaseSecret
+        .from('subjects')
+        .select('*')
+        .eq('course_id', courseId)
+        .order('order_index', { ascending: true });
+    if (error) throw error;
+    return data;
+};
+
+export const getSubjectDetailAdmin = async (subjectId) => {
+    // Ambil info subject & parent course-nya
+    const { data: subject, error: subErr } = await supabaseSecret
+        .from('subjects')
+        .select('id, title, courses(title)')
+        .eq('id', subjectId).single();
+    if (subErr) throw subErr;
+
+    // Ambil modules beserta nested quizzes & questions
+    const { data: modules, error: modErr } = await supabaseSecret
+        .from('modules')
+        .select(`
+            id, title, video_url, order_index,
+            quizzes (
+                id, title,
+                quiz_questions ( id, question, options, correct_answer )
+            )
+        `)
+        .eq('subject_id', subjectId)
+        .order('order_index', { ascending: true });
+    if (modErr) throw modErr;
+
+    return { subject, modules };
+};

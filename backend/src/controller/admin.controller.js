@@ -172,3 +172,24 @@ export const removeQuizQuestion = async (req, res) => {
         res.json({ success: true, message: "Question deleted" });
     } catch (err) { res.status(400).json({ error: err.message }); }
 };
+
+export const fetchCourses = async (req, res) => {
+    try {
+        const data = await adminService.getAllCourses();
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+export const fetchSubjects = async (req, res) => {
+    try {
+        const data = await adminService.getSubjectsByCourse(req.params.courseId);
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+export const fetchSubjectDetail = async (req, res) => {
+    try {
+        const data = await adminService.getSubjectDetailAdmin(req.params.subjectId);
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+};
