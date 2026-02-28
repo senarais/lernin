@@ -13,6 +13,7 @@ router.use(adminMiddleware);
 router.post('/live-class', adminController.addLiveClass);
 router.put('/live-class/:id', adminController.editLiveClass);
 router.delete('/live-class/:id', adminController.removeLiveClass);
+router.get('/live-class', adminController.fetchLiveClassesAdmin);
 
 // --- TRYOUT ROUTES ---
 // 1. Master Tryout

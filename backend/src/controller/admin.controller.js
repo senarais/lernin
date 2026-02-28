@@ -22,6 +22,13 @@ export const removeLiveClass = async (req, res) => {
     } catch (err) { res.status(400).json({ error: err.message }); }
 };
 
+export const fetchLiveClassesAdmin = async (req, res) => {
+    try {
+        const data = await adminService.getAllLiveClassesAdmin();
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
 // --- TRYOUT ---
 export const addTryout = async (req, res) => {
     try {

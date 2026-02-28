@@ -21,6 +21,15 @@ export const deleteLiveClass = async (id) => {
     return { message: "Live Class deleted successfully" };
 };
 
+export const getAllLiveClassesAdmin = async () => {
+    const { data, error } = await supabaseSecret
+        .from('live_classes')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+};
 
 // ==========================================
 // 2. MODULE: TRYOUT MANAGEMENT (BERLAPIS)
