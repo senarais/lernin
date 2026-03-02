@@ -75,3 +75,12 @@ export const googleAuthSuccess = async (req, res) => {
         res.status(401).json({ error: 'Invalid token or user not found' });
     }
 }
+
+export const updateProfile = async (req, res) => {
+    try {
+        const result = await authService.updateProfile(req.user.id, req.body);
+        res.json({ success: true, data: result });
+    } catch (err) { 
+        res.status(400).json({ error: err.message }); 
+    }
+};

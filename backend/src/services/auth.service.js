@@ -94,3 +94,25 @@ export const verifyGoogleToken = async (accessToken) => {
 
     return dbUser;
 }
+
+export const updateProfile = async (userId, data) => {
+    // data berisi: { username, full_name, phone_number, school }
+    const { data: result, error } = await supabaseSecret
+        .from('users')
+        .update({
+            username: data.username,
+            full_name: data.full_name,
+            phone_number: data.phone_number,
+            school: data.school
+        })
+        .eq('id', userId)
+        .select()
+        .single();
+
+    if (error) {
+        // Handle jika username sudah dipakai orang lain
+        if (error.code === '23505') throw new Error("Username sudah digunakan.");
+        throw error;
+    }
+    return result;
+};

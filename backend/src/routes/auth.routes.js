@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, logout, me, loginGoogle, googleAuthSuccess } from '../controller/auth.controller.js'
+import { register, login, logout, me, updateProfile, loginGoogle, googleAuthSuccess } from '../controller/auth.controller.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
@@ -8,6 +8,7 @@ router.post('/register', register)
 router.post('/login', login)
 router.post('/logout', logout)
 router.get('/me', authMiddleware, me)
+router.put('/profile', authMiddleware, updateProfile);
 
 // --- GOOGLE ROUTES ---
 router.get('/google', loginGoogle)           // Step 1: Redirect ke Google
