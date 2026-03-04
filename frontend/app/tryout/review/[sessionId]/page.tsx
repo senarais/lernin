@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { ChevronLeft, ChevronRight, LayoutGrid, ArrowLeft, BookOpen, CheckCircle, XCircle } from 'lucide-react'
 
 export default function TryoutReview() {
@@ -41,7 +43,13 @@ export default function TryoutReview() {
     <div className="min-h-screen bg-bg text-white flex flex-col font-sans">
       {/* HEADER REVIEW */}
       <header className="bg-[#1E293B] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div className="font-bold text-xl italic text-white">Lern<span className="text-[#5CD2DD]">in</span> <span className="text-gray-500 font-normal text-sm ml-2">| Pembahasan</span></div>
+          <div className="flex items-center gap-2">
+              <Link href="/">
+                <Image src="/lernin.png" width={80} height={34} alt="Lernin logo" priority />
+              </Link>
+              <div className="w-px h-4 bg-white/20 mx-2" />
+              <span className="text-gray-400 font-medium text-xs tracking-widest uppercase">Pembahasan</span>
+          </div>
           <button onClick={() => router.push(`/tryout/result/${sessionId}`)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-medium">
               <ArrowLeft size={18} /> Kembali ke Hasil
           </button>

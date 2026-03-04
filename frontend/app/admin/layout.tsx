@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { BookOpen, FileText, Video, LogOut, Globe, Loader2, ShieldAlert } from 'lucide-react'
 
@@ -89,8 +90,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* SIDEBAR */}
       <aside className="w-64 bg-[#1E293B] border-r border-white/5 flex flex-col hidden md:flex fixed h-full">
         <div className="p-6 border-b border-white/5">
-            <h1 className="text-2xl font-bold text-white italic">Lern<span className="text-[#5CD2DD]">in</span></h1>
-            <p className="text-xs text-[#5CD2DD] font-mono mt-1">Admin Workspace</p>
+            <Link href="/" className="block">
+                <Image src="/lernin.png" width={100} height={40} alt="Lernin logo" priority />
+            </Link>
+            <p className="text-[10px] text-[#5CD2DD] font-mono mt-1 uppercase tracking-wider">Admin Workspace</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">

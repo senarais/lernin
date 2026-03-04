@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Award, ArrowLeft, Loader2, BarChart2, BookOpen } from 'lucide-react' // Tambah BookOpen
 
 export default function TryoutResult() {
@@ -42,10 +43,16 @@ export default function TryoutResult() {
 
   return (
     <div className="min-h-screen bg-bg text-white font-sans p-4">
-      <div className="max-w-4xl mx-auto pt-10">
-          <Link href="/tryout" className="flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors w-max">
-              <ArrowLeft size={18} /> Kembali ke Daftar Tryout
+      <div className="max-w-4xl mx-auto pt-6 flex flex-col items-center">
+          <Link href="/" className="mb-10">
+              <Image src="/lernin.png" width={120} height={50} alt="Lernin logo" priority />
           </Link>
+
+          <div className="w-full">
+            <Link href="/tryout" className="flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors w-max">
+                <ArrowLeft size={18} /> Kembali ke Daftar Tryout
+            </Link>
+          </div>
 
           <div className="bg-[#1E293B] border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
               {/* Efek Cahaya di Background */}

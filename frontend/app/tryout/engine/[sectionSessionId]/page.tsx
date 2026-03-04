@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { Clock, ChevronLeft, ChevronRight, LayoutGrid, Check } from 'lucide-react'
 
 export default function CBTEngine() {
@@ -106,7 +108,11 @@ export default function CBTEngine() {
   return (
     <div className="min-h-screen bg-bg text-white flex flex-col font-sans">
       <header className="bg-[#1E293B] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div className="font-bold text-xl italic text-white">Lern<span className="text-[#5CD2DD]">in</span> <span className="text-gray-500 font-normal text-sm ml-2">| CBT Engine</span></div>
+          <div className="flex items-center gap-2">
+              <Image src="/lernin.png" width={80} height={34} alt="Lernin logo" priority />
+              <div className="w-px h-4 bg-white/20 mx-2" />
+              <span className="text-gray-400 font-medium text-xs tracking-widest uppercase">CBT Engine</span>
+          </div>
           <div className="flex items-center gap-6">
               <div className={`flex items-center gap-2 font-mono text-xl font-bold px-4 py-1.5 rounded-lg border ${timeLeft.startsWith("00:") || timeLeft.startsWith("01:") || timeLeft.startsWith("02:") ? 'border-red-500 text-red-500 bg-red-500/10 animate-pulse' : 'border-[#5CD2DD] text-[#5CD2DD] bg-[#5CD2DD]/10'}`}>
                   <Clock size={20} /> {timeLeft}
