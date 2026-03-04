@@ -1,11 +1,16 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { BookOpen, FileText, Video, LogOut, Globe } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { BookOpen, FileText, Video, LogOut, Globe, Loader2, ShieldAlert } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+  
+  // State untuk Authorization
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)
 
   // Menu Dashboard dihapus, sisa 3 fitur utama
   const menuItems = [
@@ -14,6 +19,71 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Live Class', path: '/admin/live-class', icon: Video },
   ]
 
+  // Cek apakah user adalah Admin
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/me', { credentials: 'include' })
+        const json = await res.json()
+        
+        if (json.user && json.user.role === 'admin') {
+          setIsAuthorized(true) // Lolos
+        } else {
+          setIsAuthorized(false) // Ditolak
+        }
+      } catch (e) {
+        console.error("Gagal verifikasi admin:", e)
+        setIsAuthorized(false)
+      }
+    }
+    
+    checkAdminAccess()
+  }, [])
+
+  // Fungsi untuk handle logout
+  const handleLogout = async () => {
+      try {
+          await fetch('http://localhost:5000/api/auth/logout', { 
+              method: 'POST', 
+              credentials: 'include' 
+          })
+          
+          router.push('/login')
+          router.refresh()
+      } catch (e) { 
+          console.error("Gagal logout:", e) 
+      }
+  }
+
+  // 1. Tampilan saat masih mengecek status (Loading)
+  if (isAuthorized === null) {
+      return (
+          <div className="min-h-screen bg-[#0F172A] flex justify-center items-center flex-col gap-4">
+              <Loader2 className="animate-spin text-[#5CD2DD] w-12 h-12" />
+              <p className="text-[#5CD2DD] font-mono text-sm">Memverifikasi otorisasi admin...</p>
+          </div>
+      )
+  }
+
+  // 2. Tampilan jika BUKAN Admin (Unauthorized)
+  if (isAuthorized === false) {
+      return (
+          <div className="min-h-screen bg-[#0F172A] flex justify-center items-center flex-col text-white px-4 text-center">
+              <ShieldAlert size={80} className="text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
+              <h1 className="text-4xl font-bold mb-3">401 Unauthorized</h1>
+              <p className="text-gray-400 mb-8 max-w-md">
+                  Akses ditolak. Anda tidak memiliki izin untuk masuk ke area Admin Workspace.
+              </p>
+              <Link href="/">
+                  <button className="px-8 py-3 bg-[#5CD2DD] text-slate-900 font-bold rounded-xl hover:bg-[#4bc0cb] transition-colors shadow-lg shadow-[#5CD2DD]/20">
+                      Kembali ke Beranda
+                  </button>
+              </Link>
+          </div>
+      )
+  }
+
+  // 3. Tampilan jika lolos otorisasi Admin (Render Layout Normal)
   return (
     <div className="min-h-screen bg-[#0F172A] text-white flex font-sans">
       {/* SIDEBAR */}
@@ -25,7 +95,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <nav className="flex-1 p-4 space-y-2">
             {menuItems.map((item) => {
-                // Biar active state-nya tetep nyala kalau lagi di sub-folder
                 const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`)
                 const Icon = item.icon
                 return (
@@ -47,7 +116,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <Globe size={18} /> Lihat Website
                 </div>
             </Link>
-            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:text-white hover:bg-red-500/20 transition-all font-medium text-sm">
+            <button 
+                onClick={handleLogout} 
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:text-white hover:bg-red-500/20 transition-all font-medium text-sm cursor-pointer"
+            >
                 <LogOut size={18} /> Logout Admin
             </button>
         </div>
