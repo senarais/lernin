@@ -1,4 +1,5 @@
 "use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
@@ -22,7 +23,7 @@ const Home = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/auth/me', {
+                const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
                     credentials: 'include'
                 })
                 const json = await res.json()

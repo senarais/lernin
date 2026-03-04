@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link' // <-- FIX: Jangan lupa import Link
@@ -26,7 +27,7 @@ export default function AdminELearning() {
   const loadCourses = async () => {
       setLoading(true)
       try {
-          const res = await fetch('http://localhost:5000/api/admin/course', { credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/course`, { credentials: 'include' })
           const json = await res.json()
           if(json.success) setCourses(json.data)
       } catch (e) { console.error(e) } finally { setLoading(false) }
@@ -36,7 +37,7 @@ export default function AdminELearning() {
       setActiveCourse(course)
       setSubLoading(true)
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/course/${course.id}/subject`, { credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/course/${course.id}/subject`, { credentials: 'include' })
           const json = await res.json()
           if(json.success) setSubjects(json.data)
       } catch (e) { console.error(e) } finally { setSubLoading(false) }
@@ -47,7 +48,7 @@ export default function AdminELearning() {
   // ==========================================
   const saveCourse = async () => {
       try {
-          const url = editId ? `http://localhost:5000/api/admin/course/${editId}` : `http://localhost:5000/api/admin/course`
+          const url = editId ? `${API_BASE_URL}/api/admin/course/${editId}` : `${API_BASE_URL}/api/admin/course`
           const method = editId ? 'PUT' : 'POST'
 
           const res = await fetch(url, {
@@ -67,7 +68,7 @@ export default function AdminELearning() {
       e.stopPropagation()
       if(!confirm("Hapus Course? Semua Mapel, Modul, dan Quiz di dalamnya akan ikut terhapus (Cascade).")) return;
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/course/${id}`, { method: 'DELETE', credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/course/${id}`, { method: 'DELETE', credentials: 'include' })
           if(res.ok) {
               if(activeCourse?.id === id) setActiveCourse(null)
               loadCourses()
@@ -81,8 +82,8 @@ export default function AdminELearning() {
   const saveSubject = async () => {
       try {
           const url = editId 
-              ? `http://localhost:5000/api/admin/subject/${editId}` 
-              : `http://localhost:5000/api/admin/course/${activeCourse.id}/subject`
+              ? `${API_BASE_URL}/api/admin/subject/${editId}` 
+              : `${API_BASE_URL}/api/admin/course/${activeCourse.id}/subject`
           const method = editId ? 'PUT' : 'POST'
 
           const res = await fetch(url, {
@@ -101,7 +102,7 @@ export default function AdminELearning() {
   const deleteSubject = async (id: string) => {
       if(!confirm("Hapus Mapel ini? Semua Modul akan hilang.")) return;
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/subject/${id}`, { method: 'DELETE', credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/subject/${id}`, { method: 'DELETE', credentials: 'include' })
           if(res.ok) {
               handleSelectCourse(activeCourse)
           }

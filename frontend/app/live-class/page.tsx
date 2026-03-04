@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -18,7 +19,7 @@ export default function LiveClassCatalog() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/live-class/catalog', { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/live-class/catalog`, { credentials: 'include' })
         const json = await res.json()
         if (json.success) setClasses(json.data)
       } catch (e) { console.error(e) } finally { setLoading(false) }

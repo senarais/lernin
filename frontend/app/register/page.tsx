@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -13,7 +14,7 @@ export default function RegisterPage() {
     e.preventDefault()
 
     try {
-        const res = await fetch('http://localhost:5000/api/auth/register', {
+        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, username })
@@ -33,7 +34,7 @@ export default function RegisterPage() {
   }
 
   const handleGoogleAuth = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google'
+    window.location.href = `${API_BASE_URL}/api/auth/google`
   }
 
   return (

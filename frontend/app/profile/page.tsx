@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/app/components/Navbar'
 import { Loader2, User, Mail, ShieldCheck, GraduationCap, Phone, Save, CheckCircle } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function ProfilePage() {
     const router = useRouter()
@@ -23,7 +24,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/auth/me', { credentials: 'include' })
+                const res = await fetch(`${API_BASE_URL}/api/auth/me`, { credentials: 'include' })
                 const json = await res.json()
                 if (json.user) {
                     setUser(json.user)
@@ -56,7 +57,7 @@ export default function ProfilePage() {
         setSuccessMsg('')
 
         try {
-            const res = await fetch('http://localhost:5000/api/auth/profile', {
+            const res = await fetch(`${API_BASE_URL}/api/auth/profile`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

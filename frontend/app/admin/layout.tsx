@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { BookOpen, FileText, Video, LogOut, Globe, Loader2, ShieldAlert } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -24,7 +25,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const checkAdminAccess = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/auth/me', { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, { credentials: 'include' })
         const json = await res.json()
         
         if (json.user && json.user.role === 'admin') {
@@ -44,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Fungsi untuk handle logout
   const handleLogout = async () => {
       try {
-          await fetch('http://localhost:5000/api/auth/logout', { 
+          await fetch(`${API_BASE_URL}/api/auth/logout`, { 
               method: 'POST', 
               credentials: 'include' 
           })

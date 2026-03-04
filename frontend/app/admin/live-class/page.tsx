@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, Video, Loader2, X, Calendar, User, Link as LinkIcon, DollarSign, Image as ImageIcon } from 'lucide-react'
@@ -15,7 +16,7 @@ export default function AdminLiveClass() {
   const loadLiveClasses = async () => {
       setLoading(true)
       try {
-          const res = await fetch('http://localhost:5000/api/admin/live-class', { credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/live-class`, { credentials: 'include' })
           const json = await res.json()
           if(json.success) setLiveClasses(json.data)
       } catch (e) { console.error(e) } finally { setLoading(false) }
@@ -23,7 +24,7 @@ export default function AdminLiveClass() {
 
   const handleSave = async () => {
       try {
-          const url = editId ? `http://localhost:5000/api/admin/live-class/${editId}` : `http://localhost:5000/api/admin/live-class`
+          const url = editId ? `${API_BASE_URL}/api/admin/live-class/${editId}` : `${API_BASE_URL}/api/admin/live-class`
           const method = editId ? 'PUT' : 'POST'
 
           // Clone form data dan format ulang schedule ke ISO String untuk Postgres
@@ -43,7 +44,7 @@ export default function AdminLiveClass() {
   const handleDelete = async (id: string) => {
       if(!confirm("Yakin hapus kelas ini? Data riwayat pembelian user untuk kelas ini bisa terdampak.")) return;
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/live-class/${id}`, { method: 'DELETE', credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/live-class/${id}`, { method: 'DELETE', credentials: 'include' })
           if(res.ok) loadLiveClasses()
       } catch (e) { console.error(e) }
   }

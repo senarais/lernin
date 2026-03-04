@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Award, ArrowLeft, Loader2, BarChart2, BookOpen } from 'lucide-react' // Tambah BookOpen
+import { API_BASE_URL } from '@/lib/api'
 
 export default function TryoutResult() {
   const { sessionId } = useParams()
@@ -14,7 +15,7 @@ export default function TryoutResult() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/tryout/result/${sessionId}`, { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/tryout/result/${sessionId}`, { credentials: 'include' })
         const json = await res.json()
         
         if (json.success) {

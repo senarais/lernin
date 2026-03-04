@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
@@ -15,7 +16,7 @@ export default function AuthCallbackPage() {
 
     if (accessToken) {
       // 2. Kirim token ke Backend Express
-      fetch('http://localhost:5000/api/auth/google/success', {
+      fetch(`${API_BASE_URL}/api/auth/google/success`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accessToken }),

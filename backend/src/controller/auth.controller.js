@@ -15,8 +15,15 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const {email, password} = req.body;
-        const user = await loginUser({email, password})
+        // Tangkap 'identifier'. Fallback ke 'email' jika FE masih ngirim key 'email'
+        const identifier = req.body.identifier || req.body.email;
+        const password = req.body.password;
+
+        if (!identifier || !password) {
+            throw new Error("Email/Username dan password wajib diisi.");
+        }
+
+        const user = await loginUser({ identifier, password });
         
         res.cookie('access_token', user.accessToken, {
             httpOnly: true,
@@ -27,7 +34,7 @@ export const login = async (req, res) => {
 
         res.json({ id: user.id, email: user.email, username: user.username })
     } catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(400).json({ error: err.message })
     }
 }
 

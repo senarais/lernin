@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -19,7 +20,7 @@ export default function TryoutLobby() {
   useEffect(() => {
     const fetchTryout = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/tryout/list', { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/tryout/list`, { credentials: 'include' })
         const json = await res.json()
         const found = json.data.find((t: any) => t.id === tryoutId)
         if(found) found.tryout_sections.sort((a:any, b:any) => a.order_index - b.order_index)
@@ -39,7 +40,7 @@ export default function TryoutLobby() {
   const handleStartMaster = async () => {
     setStarting(true)
     try {
-        const res = await fetch('http://localhost:5000/api/tryout/start', {
+        const res = await fetch(`${API_BASE_URL}/api/tryout/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tryoutId }),
@@ -58,7 +59,7 @@ export default function TryoutLobby() {
 
   const handleStartSection = async (sectionId: string) => {
     try {
-        const res = await fetch('http://localhost:5000/api/tryout/section/start', {
+        const res = await fetch(`${API_BASE_URL}/api/tryout/section/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId: session.id, sectionId }),
@@ -83,7 +84,7 @@ export default function TryoutLobby() {
   const handleFinishTryout = async () => {
       if(!confirm("Yakin ingin mengakhiri seluruh tryout?")) return;
       try {
-          const res = await fetch(`http://localhost:5000/api/tryout/${session.id}/finish`, {
+          const res = await fetch(`${API_BASE_URL}/api/tryout/${session.id}/finish`, {
               method: 'POST', credentials: 'include'
           })
           const json = await res.json()

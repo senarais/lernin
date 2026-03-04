@@ -8,19 +8,47 @@ export const registerUser = async ({email, password, username}) => {
     return {id: data.user.id, email, username}
 }
 
-export const loginUser = async ({email, password}) => {
-    const {data, error} = await supabaseAnon.auth.signInWithPassword({ email, password })
-    if (error) throw error
+export const loginUser = async ({ identifier, password }) => {
+    let loginEmail = identifier;
 
-    const {data: user, error: userError} = await supabaseSecret
+    // 1. Cek apakah input adalah username (tidak mengandung '@')
+    if (!identifier.includes('@')) {
+        // Cari email berdasarkan username di tabel users
+        const { data: userData, error: userError } = await supabaseSecret
+            .from('users')
+            .select('email')
+            .eq('username', identifier)
+            .single();
+        
+        // Kalau username gak ketemu di database
+        if (userError || !userData) {
+            throw new Error("Username tidak ditemukan.");
+        }
+        
+        // Timpa loginEmail dengan email asli si user
+        loginEmail = userData.email;
+    }
+
+    // 2. Lanjut login ke Supabase Auth menggunakan Email & Password
+    const { data, error } = await supabaseAnon.auth.signInWithPassword({ 
+        email: loginEmail, 
+        password 
+    });
+    
+    if (error) {
+        throw new Error("Email/Username atau password salah.");
+    }
+
+    // 3. Ambil data user dari public.users
+    const { data: user, error: dbError } = await supabaseSecret
         .from('users')
         .select('id, email, username')
         .eq('id', data.user.id)
-        .single()
+        .single();
     
-    if (userError) throw userError
+    if (dbError) throw dbError;
 
-    return { ...user, accessToken: data.session.access_token }
+    return { ...user, accessToken: data.session.access_token };
 }
 
 export const getUser = async (userId) => {

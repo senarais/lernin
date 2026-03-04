@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -19,7 +20,7 @@ export default function PricingPage() {
     setLoading(true)
     try {
       // 1. Minta Token ke Backend kita
-      const res = await fetch('http://localhost:5000/api/payment/purchase', {
+      const res = await fetch(`${API_BASE_URL}/api/payment/purchase`, {
         method: 'POST',
         credentials: 'include' // Bawa cookie auth
       })

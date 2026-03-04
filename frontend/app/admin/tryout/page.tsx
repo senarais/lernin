@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -16,7 +17,7 @@ export default function AdminTryout() {
   const loadTryouts = async () => {
       setLoading(true)
       try {
-          const res = await fetch('http://localhost:5000/api/admin/tryout', { credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/tryout`, { credentials: 'include' })
           const json = await res.json()
           if(json.success) setTryouts(json.data)
       } catch (e) { console.error(e) } finally { setLoading(false) }
@@ -24,7 +25,7 @@ export default function AdminTryout() {
 
   const handleSave = async () => {
       try {
-          const url = editId ? `http://localhost:5000/api/admin/tryout/${editId}` : `http://localhost:5000/api/admin/tryout`
+          const url = editId ? `${API_BASE_URL}/api/admin/tryout/${editId}` : `${API_BASE_URL}/api/admin/tryout`
           const method = editId ? 'PUT' : 'POST'
           const res = await fetch(url, {
               method, headers: { 'Content-Type': 'application/json' },
@@ -37,14 +38,14 @@ export default function AdminTryout() {
   const handleDelete = async (id: string) => {
       if(!confirm("Hapus Tryout ini? SEMUA Sub-tes dan Soal di dalamnya akan ikut lenyap (Cascade).")) return;
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/tryout/${id}`, { method: 'DELETE', credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/tryout/${id}`, { method: 'DELETE', credentials: 'include' })
           if(res.ok) loadTryouts()
       } catch (e) { console.error(e) }
   }
 
   const togglePublish = async (id: string, currentStatus: boolean) => {
       try {
-          await fetch(`http://localhost:5000/api/admin/tryout/${id}`, {
+          await fetch(`${API_BASE_URL}/api/admin/tryout/${id}`, {
               method: 'PUT', headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ is_published: !currentStatus }), credentials: 'include'
           })

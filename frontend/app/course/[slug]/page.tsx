@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -27,7 +28,7 @@ export default function SubjectListPage() {
     const fetchSubjects = async () => {
       setLoading(true)
       try {
-        let url = `http://localhost:5000/api/courses/${slug}/subjects`
+        let url = `${API_BASE_URL}/api/courses/${slug}/subjects`
         if (isSchoolMode) {
           url += `?grade=${grade}`
         }

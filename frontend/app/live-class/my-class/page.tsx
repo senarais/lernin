@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -15,7 +16,7 @@ export default function MyLiveClassPage() {
       try {
         // Hit API my-classes yang udah kita buat di backend
         // Backend akan otomatis cek apakah user PRO atau punya record di user_live_classes
-        const res = await fetch('http://localhost:5000/api/live-class/my-classes', { 
+        const res = await fetch(`${API_BASE_URL}/api/live-class/my-classes`, { 
           credentials: 'include' 
         })
         const json = await res.json()

@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -17,7 +18,7 @@ export default function CourseSelectionPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/courses/list', {
+        const res = await fetch(`${API_BASE_URL}/api/courses/list`, {
           credentials: 'include'
         })
         const json = await res.json()

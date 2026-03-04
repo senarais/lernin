@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -23,7 +24,7 @@ export default function CourseVideoPlayer({ activeModuleId }: { activeModuleId: 
     const fetchVideoDetail = async () => {
       setIsLoadingVideo(true)
       try {
-        const res = await fetch(`http://localhost:5000/api/courses/modules/${activeModuleId}`, { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/courses/modules/${activeModuleId}`, { credentials: 'include' })
         const json = await res.json()
         if (json.data && json.data.video_url) setVideoUrl(json.data.video_url)
       } catch (e) { console.error(e) } finally { setIsLoadingVideo(false) }
@@ -48,7 +49,7 @@ export default function CourseVideoPlayer({ activeModuleId }: { activeModuleId: 
     if (!activeModuleId) return
     setIsCompleting(true)
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/modules/${activeModuleId}/complete`, { method: 'POST', credentials: 'include' })
+      const res = await fetch(`${API_BASE_URL}/api/courses/modules/${activeModuleId}/complete`, { method: 'POST', credentials: 'include' })
       if (res.ok) router.refresh()
     } catch (error) { console.error(error) } finally { setIsCompleting(false) }
   }

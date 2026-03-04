@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -20,7 +21,7 @@ export default function AdminTryoutDetail() {
   const loadData = async () => {
       setLoading(true)
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/tryout/${tryoutId}`, { credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/tryout/${tryoutId}`, { credentials: 'include' })
           const json = await res.json()
           if(json.success) {
               setData(json.data)
@@ -38,9 +39,9 @@ export default function AdminTryoutDetail() {
           let method = editId ? 'PUT' : 'POST'
 
           if (modalType === 'section') {
-              url = editId ? `http://localhost:5000/api/admin/tryout-section/${editId}` : `http://localhost:5000/api/admin/tryout/${tryoutId}/section`
+              url = editId ? `${API_BASE_URL}/api/admin/tryout-section/${editId}` : `${API_BASE_URL}/api/admin/tryout/${tryoutId}/section`
           } else if (modalType === 'question') {
-              url = editId ? `http://localhost:5000/api/admin/tryout-question/${editId}` : `http://localhost:5000/api/admin/tryout/section/${activeSection.id}/question`
+              url = editId ? `${API_BASE_URL}/api/admin/tryout-question/${editId}` : `${API_BASE_URL}/api/admin/tryout/section/${activeSection.id}/question`
           }
 
           const res = await fetch(url, {
@@ -54,7 +55,7 @@ export default function AdminTryoutDetail() {
   const handleDelete = async (type: string, id: string) => {
       if(!confirm(`Yakin hapus ${type} ini?`)) return;
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/tryout-${type}/${id}`, { method: 'DELETE', credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/tryout-${type}/${id}`, { method: 'DELETE', credentials: 'include' })
           if(res.ok) {
               if (type === 'section' && activeSection?.id === id) setActiveSection(null)
               loadData()

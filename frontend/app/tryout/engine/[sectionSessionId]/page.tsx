@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Clock, ChevronLeft, ChevronRight, LayoutGrid, Check } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function CBTEngine() {
   const { sectionSessionId } = useParams()
@@ -62,7 +63,7 @@ export default function CBTEngine() {
       
       setIsSubmitting(true)
       try {
-          const res = await fetch(`http://localhost:5000/api/tryout/section/${sectionSessionId}/submit`, {
+          const res = await fetch(`${API_BASE_URL}/api/tryout/section/${sectionSessionId}/submit`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ answers }),

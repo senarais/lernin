@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -29,7 +30,7 @@ export default function AdminSubjectDetail() {
   const loadData = async () => {
       setLoading(true)
       try {
-          const res = await fetch(`http://localhost:5000/api/admin/subject/${subjectId}/modules`, { credentials: 'include' })
+          const res = await fetch(`${API_BASE_URL}/api/admin/subject/${subjectId}/modules`, { credentials: 'include' })
           const json = await res.json()
           if(json.success) {
               setData(json.data)
@@ -52,11 +53,11 @@ export default function AdminSubjectDetail() {
           let payload = { ...formData }
 
           if (modalType === 'module') {
-              url = editId ? `http://localhost:5000/api/admin/module/${editId}` : `http://localhost:5000/api/admin/subject/${subjectId}/module`
+              url = editId ? `${API_BASE_URL}/api/admin/module/${editId}` : `${API_BASE_URL}/api/admin/subject/${subjectId}/module`
           } else if (modalType === 'quiz') {
-              url = editId ? `http://localhost:5000/api/admin/quiz/${editId}` : `http://localhost:5000/api/admin/module/${activeModule.id}/quiz`
+              url = editId ? `${API_BASE_URL}/api/admin/quiz/${editId}` : `${API_BASE_URL}/api/admin/module/${activeModule.id}/quiz`
           } else if (modalType === 'question') {
-              url = editId ? `http://localhost:5000/api/admin/quiz-question/${editId}` : `http://localhost:5000/api/admin/quiz/${formData.quiz_id}/question`
+              url = editId ? `${API_BASE_URL}/api/admin/quiz-question/${editId}` : `${API_BASE_URL}/api/admin/quiz/${formData.quiz_id}/question`
               // Parsing options array ke JSONB format
               payload.options = questionOptions.filter(o => o.trim() !== '') // Hapus opsi kosong
           }
@@ -78,7 +79,7 @@ export default function AdminSubjectDetail() {
   const handleDelete = async (type: string, id: string) => {
       if(!confirm(`Yakin ingin menghapus ${type} ini? Data yang terkait akan ikut terhapus.`)) return;
       try {
-          let url = `http://localhost:5000/api/admin/${type}/${id}`
+          let url = `${API_BASE_URL}/api/admin/${type}/${id}`
           const res = await fetch(url, { method: 'DELETE', credentials: 'include' })
           if(res.ok) {
               if (type === 'module' && activeModule?.id === id) setActiveModule(null)

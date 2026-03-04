@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -45,7 +46,7 @@ export default function SubjectDetailPage() {
       setLoading(true)
       try {
         const res = await fetch(
-          `http://localhost:5000/api/courses/subjects/${subjectId}/modules`,
+          `${API_BASE_URL}/api/courses/subjects/${subjectId}/modules`,
           { credentials: 'include' }
         )
         const json = await res.json()
@@ -79,7 +80,7 @@ export default function SubjectDetailPage() {
         // Ambil semua subject dalam course ini (misal semua subject 'sma-ipa')
         // Kita pake endpoint existing: /api/courses/:slug/subjects
         // Kita tambah query ?grade=... kalo dia punya grade
-        let url = `http://localhost:5000/api/courses/${currentSubject.course_slug}/subjects`
+        let url = `${API_BASE_URL}/api/courses/${currentSubject.course_slug}/subjects`
         
         if (currentSubject.grade_level) {
              url += `?grade=${currentSubject.grade_level}`
@@ -120,7 +121,7 @@ export default function SubjectDetailPage() {
     // Contoh: Lagi di Biologi Kls 10 -> Pindah Kls 11 -> Cari subject apa aja di Kls 11 (misal Fisika Kls 11)
     try {
         const res = await fetch(
-            `http://localhost:5000/api/courses/${currentSubject.course_slug}/subjects?grade=${newGrade}`,
+            `${API_BASE_URL}/api/courses/${currentSubject.course_slug}/subjects?grade=${newGrade}`,
             { credentials: 'include' }
         )
         const json = await res.json()

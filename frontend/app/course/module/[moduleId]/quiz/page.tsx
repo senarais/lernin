@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -32,7 +33,7 @@ export default function QuizPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       const res = await fetch(
-        `http://localhost:5000/api/courses/modules/${moduleId}/quiz`,
+        `${API_BASE_URL}/api/courses/modules/${moduleId}/quiz`,
         { credentials: 'include' }
       )
       const json = await res.json()
@@ -46,7 +47,7 @@ export default function QuizPage() {
     if (!quiz) return
 
     const res = await fetch(
-      `http://localhost:5000/api/courses/quizzes/${quiz.id}/submit`,
+      `${API_BASE_URL}/api/courses/quizzes/${quiz.id}/submit`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

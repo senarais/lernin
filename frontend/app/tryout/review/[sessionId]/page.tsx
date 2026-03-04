@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, LayoutGrid, ArrowLeft, BookOpen, CheckCircle, XCircle } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function TryoutReview() {
   const { sessionId } = useParams()
@@ -18,7 +19,7 @@ export default function TryoutReview() {
   useEffect(() => {
     const fetchReview = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/tryout/review/${sessionId}`, { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/tryout/review/${sessionId}`, { credentials: 'include' })
         const json = await res.json()
         if (json.success) setData(json.data)
       } catch (e) { console.error(e) } finally { setLoading(false) }

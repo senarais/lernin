@@ -1,4 +1,5 @@
-'use client'
+"use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -21,7 +22,7 @@ export default function VideoPage() {
     const fetchVideo = async () => {
       try {
         setIsLoading(true)
-        const res = await fetch(`http://localhost:5000/api/courses/modules/${moduleId}`, { credentials: 'include' })
+        const res = await fetch(`${API_BASE_URL}/api/courses/modules/${moduleId}`, { credentials: 'include' })
         const json = await res.json()
         
         // Asumsi: json.data.video_url adalah link file .mp4 dari Supabase
@@ -82,7 +83,7 @@ export default function VideoPage() {
   const handleComplete = async () => {
     setIsCompleting(true)
     try {
-      await fetch(`http://localhost:5000/api/courses/modules/${moduleId}/complete`, { method: 'POST', credentials: 'include' })
+      await fetch(`${API_BASE_URL}/api/courses/modules/${moduleId}/complete`, { method: 'POST', credentials: 'include' })
       router.back()
     } catch (error) { setIsCompleting(false) }
   }

@@ -1,4 +1,5 @@
 "use client"
+import { API_BASE_URL } from '@/lib/api'
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
@@ -6,64 +7,64 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 type NavigationItem = {
-    title: string
-    path: string
+  title: string
+  path: string
 }
 
 const Navbar = () => {
-    const [open, setOpen] = useState(false)
-    const [scrolled, setScrolled] = useState(false)
-    const [user, setUser] = useState<any>(null)
-    
-    const [dropdownOpen, setDropdownOpen] = useState(false)
-    const dropdownRef = useRef<HTMLDivElement>(null)
-    const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
-    const navigation: NavigationItem[] = [
-        { title: "E-Learning", path: "/course" },
-        { title: "Live Class", path: "/live-class" },
-        { title: "Tryout", path: "/tryout" },
-        { title: "My Class", path: "/live-class/my-class" }
-    ]
+  const navigation: NavigationItem[] = [
+      { title: "E-Learning", path: "/course" },
+      { title: "Live Class", path: "/live-class" },
+      { title: "Tryout", path: "/tryout" },
+      { title: "My Class", path: "/live-class/my-class" }
+  ]
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50)
-        }
+  useEffect(() => {
+      const handleScroll = () => {
+          setScrolled(window.scrollY > 50)
+      }
 
-        window.addEventListener("scroll", handleScroll)
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])
+      window.addEventListener("scroll", handleScroll)
+      return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch('http://localhost:5000/api/auth/me', { credentials: 'include' })
-                const json = await res.json()
-                if (json.user) setUser(json.user)
-            } catch (e) { console.error(e) }
-        }
-        checkAuth()
-    }, [])
+  useEffect(() => {
+      const checkAuth = async () => {
+          try {
+              const res = await fetch(`${API_BASE_URL}/api/auth/me`, { credentials: 'include' })
+              const json = await res.json()
+              if (json.user) setUser(json.user)
+          } catch (e) { console.error(e) }
+      }
+      checkAuth()
+  }, [])
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setDropdownOpen(false)
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
+  useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+          if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+              setDropdownOpen(false)
+          }
+      }
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
-    const handleLogout = async () => {
-        try {
-            await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', credentials: 'include' })
-            setUser(null)
-            router.push('/login')
-            router.refresh()
-        } catch (e) { console.error(e) }
-    }
+  const handleLogout = async () => {
+      try {
+          await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' })
+          setUser(null)
+          router.push('/login')
+          router.refresh()
+      } catch (e) { console.error(e) }
+  }
 
     return (
         <nav

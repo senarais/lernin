@@ -2,9 +2,11 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  // 1. Ganti state email jadi identifier
+  const [identifier, setIdentifier] = useState('') 
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [msg, setMsg] = useState('')
@@ -14,11 +16,12 @@ export default function LoginPage() {
     e.preventDefault()
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         credentials: 'include', 
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        // 2. Kirim payload identifier
+        body: JSON.stringify({ identifier, password })
       })
 
       const data = await res.json()
@@ -35,7 +38,7 @@ export default function LoginPage() {
   }
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google'
+    window.location.href = `${API_BASE_URL}/api/auth/google`
   }
 
   return (
@@ -50,12 +53,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-white text-sm font-medium mb-2">Email Address</label>
+            {/* 3. Ganti Label dan tipe input menjadi text */}
+            <label className="block text-white text-sm font-medium mb-2">Email or Username</label>
             <input
-              type="email"
-              placeholder="needson@gmail.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              type="text"
+              placeholder="needson@gmail.com or needson"
+              value={identifier}
+              onChange={e => setIdentifier(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
