@@ -4,10 +4,13 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { PlayCircle, HelpCircle, ChevronDown, CheckCircle, Lock } from 'lucide-react'
 
+// 1. UPDATE TYPE: Tambahkan optional boolean dari backend biar ga error TypeScript
 type Module = {
   id: string
   title: string
   is_completed: boolean
+  video_completed?: boolean // Tambahan buat logic ceklis
+  quiz_completed?: boolean  // Tambahan buat logic ceklis
 }
 
 interface ModuleItemProps {
@@ -58,9 +61,8 @@ export default function ModuleItem({ module, index, isActive, onPlayVideo }: Mod
             <h4 className={`text-lg font-bold text-white group-hover:text-[#2D9CDB] transition-colors`}>
               {module.title}
             </h4>
-            {/* Dummy metadata biar persis gambar */}
             <p className="text-gray-400 text-sm font-light mt-0.5">
-              Video Pembelajaran • 10 Menit
+              Video Pembelajaran • {module.quiz_completed ? 'Kuis Selesai' : 'Belum Kuis'}
             </p>
           </div>
         </div>
@@ -90,7 +92,12 @@ export default function ModuleItem({ module, index, isActive, onPlayVideo }: Mod
           >
             <div>
               <div className='flex items-center'>
-                <img className='w-7 mr-5' src="/course/play.svg" alt="" />
+                {/* LOGIC CEKLIS VIDEO: Berubah hijau kalo video_completed true */}
+                {module.video_completed ? (
+                    <CheckCircle className="w-7 h-7 mr-5 text-green-500" />
+                ) : (
+                    <img className='w-7 mr-5' src="/course/play.svg" alt="" />
+                )}
                 <div>
                   <p className="font-bold text-lg">Tonton Materi</p>
                   <p className="font-medium text-white/90">Pelajari materi selengkapnya</p>
@@ -101,6 +108,7 @@ export default function ModuleItem({ module, index, isActive, onPlayVideo }: Mod
           </button>
 
           {/* Tombol Quiz */}
+          {/* FIX URL: Dikembalikan ke /course/module (tanpa 's') sesuai struktur folder Next.js lu */}
           <Link href={`/course/module/${module.id}/quiz`} className="block">
             <button
               className={`w-full h-[62px] flex items-center justify-between gap-3 p-3 rounded-lg text-sm transition-colors text-left
@@ -109,16 +117,22 @@ export default function ModuleItem({ module, index, isActive, onPlayVideo }: Mod
             >
               <div>
                 <div className='flex items-center'>
-                  <HelpCircle size={18} className="w-7 mr-5" />
+                  {/* LOGIC CEKLIS KUIS: Berubah hijau kalo quiz_completed true */}
+                  {module.quiz_completed ? (
+                      <CheckCircle className="w-7 h-7 mr-5 text-green-500" />
+                  ) : (
+                      <HelpCircle size={28} className="mr-5 text-gray-400" />
+                  )}
                   <div>
                     <p className="font-bold text-lg">Kerjakan Kuis</p>
-                    <p className="font-medium text-white/90">Uji pemahaman kamu</p>
+                    <p className="font-medium text-white/90">
+                        {module.quiz_completed ? 'Lihat hasil & riwayat' : 'Uji pemahaman kamu'}
+                    </p>
                   </div>
                 </div>
               </div>
             </button>
           </Link>
-
 
         </div>
       </div>

@@ -252,7 +252,7 @@ export const getQuizAttempts = async (userId, quizId) => {
  * (Updated to support Breadcrumbs & Navigation)
  */
 export const getSubjectDetailWithModules = async (userId, subjectId) => {
-  // 1. Ambil Modules seperti biasa
+  // 1. Ambil Modules dan tambahkan is_completed, video_completed, quiz_completed
   const { data: modules, error: moduleError } = await supabaseSecret
     .from('modules')
     .select(`
@@ -260,7 +260,7 @@ export const getSubjectDetailWithModules = async (userId, subjectId) => {
       title,
       video_url,
       order_index,
-      user_module_progress ( is_completed )
+      user_module_progress ( is_completed, video_completed, quiz_completed )
     `)
     .eq('subject_id', subjectId)
     .eq('user_module_progress.user_id', userId)
@@ -275,31 +275,30 @@ export const getSubjectDetailWithModules = async (userId, subjectId) => {
       id,
       title,
       grade_level,
-      courses (
-        slug,
-        title
-      )
+      courses ( slug, title )
     `)
     .eq('id', subjectId)
     .single()
 
   if (subjectError) throw subjectError
 
-  // 3. Gabungin datanya
+  // 3. Gabungin datanya dan mapping status progress-nya
   return {
     subject: {
       id: subject.id,
       title: subject.title,
       grade_level: subject.grade_level,
-      course_slug: subject.courses.slug, // Penting buat navigasi
-      course_title: subject.courses.title // Penting buat breadcrumb
+      course_slug: subject.courses.slug,
+      course_title: subject.courses.title
     },
     modules: modules.map(m => ({
       id: m.id,
       title: m.title,
       video_url: m.video_url,
       order_index: m.order_index,
-      is_completed: m.user_module_progress?.[0]?.is_completed ?? false
+      is_completed: m.user_module_progress?.[0]?.is_completed ?? false,
+      video_completed: m.user_module_progress?.[0]?.video_completed ?? false,
+      quiz_completed: m.user_module_progress?.[0]?.quiz_completed ?? false
     }))
   }
 }

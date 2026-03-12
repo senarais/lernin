@@ -14,6 +14,8 @@ type Module = {
   id: string
   title: string
   is_completed: boolean
+  video_completed: boolean
+  quiz_completed: boolean  
 }
 
 type SubjectInfo = {
